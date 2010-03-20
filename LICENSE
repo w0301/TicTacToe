@@ -10,12 +10,3 @@
 *   General Public License for more details:
 *   http://www.gnu.org/licenses/gpl.txt
 */
-
-#include "main.h"
-#include <QApplication>
-
-int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
-
-    return app.exec();
-}
