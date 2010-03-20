@@ -12,10 +12,17 @@
 */
 
 #include "main.h"
+#include <QLocale>
+#include <QTranslator>
 #include <QApplication>
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+
+    // nastavenie translatoru pre program
+    QTranslator translator;
+    translator.load( QString("tictactoe_") + QLocale::system().name() );
+    app.installTranslator(&translator);
 
     return app.exec();
 }
