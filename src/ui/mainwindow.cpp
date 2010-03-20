@@ -13,21 +13,18 @@
 
 #include "main.h"
 #include "ui/mainwindow.h"
+#include "ui/playboard.h"
 
-#include <QLocale>
-#include <QTranslator>
-#include <QApplication>
+#include <QtGui>
 
-int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
+MainWindow::MainWindow() : QMainWindow(NULL) {
+    // nastavenie defaultnych hodnot
+    setWindowTitle(tr("TicTacToe"));
+    setMinimumSize(405, 405);
 
-    // nastavenie translatoru pre program
-    QTranslator translator;
-    translator.load( QString("tictactoe_") + QLocale::system().name() );
-    app.installTranslator(&translator);
+    // vytvorenie hracej plochy
+    m_board = new PlayBoard(this, DEFAULT_BOARD_SIZE);
+    setCentralWidget(m_board);
 
-    MainWindow window;
-    window.show();
-
-    return app.exec();
 }
+

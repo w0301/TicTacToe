@@ -14,4 +14,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#define DEFAULT_BOARD_SIZE 20
+
 #endif // MAIN_H

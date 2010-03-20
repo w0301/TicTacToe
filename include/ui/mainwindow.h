@@ -11,23 +11,19 @@
 *   http://www.gnu.org/licenses/gpl.txt
 */
 
-#include "main.h"
-#include "ui/mainwindow.h"
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-#include <QLocale>
-#include <QTranslator>
-#include <QApplication>
+#include <QMainWindow>
 
-int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
+class PlayBoard;
 
-    // nastavenie translatoru pre program
-    QTranslator translator;
-    translator.load( QString("tictactoe_") + QLocale::system().name() );
-    app.installTranslator(&translator);
+class MainWindow : public QMainWindow {
+    public:
+        MainWindow();
 
-    MainWindow window;
-    window.show();
+    private:
+        PlayBoard *m_board;
+};
 
-    return app.exec();
-}
+#endif // MAINWINDOW_H
