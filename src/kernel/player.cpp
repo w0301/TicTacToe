@@ -11,20 +11,14 @@
 *   http://www.gnu.org/licenses/gpl.txt
 */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include "main.h"
+#include "kernel/player.h"
 
-#include <QMainWindow>
+int Player::sm_idGenerator = 1;
 
-class PlayBoard;
+// konstruktor automaticky vygeneruje ID hraca
+// no nastavenie tvaru prebieha rucne
+Player::Player(PlayerShape shape, PlayerColor col) :
+        m_id(sm_idGenerator++), m_shape(shape), m_color(col) {
 
-class MainWindow : public QMainWindow {
-    public:
-        MainWindow();
-        ~MainWindow();
-
-    private:
-        PlayBoard *m_board;
-};
-
-#endif // MAINWINDOW_H
+}

@@ -12,6 +12,7 @@
 */
 
 #include "main.h"
+#include "kernel/player.h"
 #include "ui/mainwindow.h"
 #include "ui/playboard.h"
 
@@ -27,4 +28,9 @@ MainWindow::MainWindow() : QMainWindow(NULL) {
     setCentralWidget(m_board);
 
 }
+
+MainWindow::~MainWindow() {
+
+}
+
 
