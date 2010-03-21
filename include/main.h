@@ -15,5 +15,6 @@
 #define MAIN_H
 
 #define DEFAULT_BOARD_SIZE 20
+#define DEFAULT_TIME_LIMIT 0
 
 #endif // MAIN_H

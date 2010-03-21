@@ -14,19 +14,27 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <QColor>
+#include "main.h"
 
-class Player {
+#include <QColor>
+#include <QPixmap>
+#include <QObject>
+
+class QWidget;
+
+class Player : public QObject {
+    Q_OBJECT
+
     public:
         // enumeracie, ktore urcuju to ako
-        // bude vuzerat hrac na hracej ploche
+        // bude vyzerat hrac na hracej ploche
         enum PlayerShape {
             Circle,
             Cross
         };
-        typedef QColor PlayerColor;
 
-        Player(PlayerShape, PlayerColor);
+        Player(QObject*, PlayerShape, QColor);
+        virtual ~Player() { };
 
         // klasicke pristupove funkcie
         int id() const {
@@ -35,9 +43,25 @@ class Player {
         PlayerShape shape() const {
             return m_shape;
         };
-        PlayerColor color() const {
+        QColor color() const {
             return m_color;
         };
+
+        // vrati true, ked je hrac ovladany pocitacom
+        // reimplementuje sa v ComputerPlayer
+        virtual bool isComputer() {
+            return false;
+        };
+
+        // vrati obrazok pre hracov kruzok, krizik atd.
+        QPixmap playerToe(const QWidget*, QPoint, int);
+
+    public slots:
+        virtual void processMove(int = 0, int = 0);
+
+    signals:
+        // signal je poslany, ked aktualny hrac dava kamen na plochu
+        void moving(int, int);
 
     private:
         // kazdy hrac bude mat unikatne ID
@@ -48,7 +72,7 @@ class Player {
 
         // tvar a farba hraca
         PlayerShape m_shape;
-        PlayerColor m_color;
+        QColor m_color;
 };
 
 #endif // PLAYER_H

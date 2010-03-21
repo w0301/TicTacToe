@@ -25,36 +25,31 @@ PlayBoard::PlayBoard(QWidget *parent, int boardSize) :
     }
 }
 
-// destruktor
-PlayBoard::~PlayBoard() {
-
-}
-
 // funckia zapise na poziciu [x, y] hraca pl, sa mozrejme
 // pokial tam nieje uz iny hrac - vrati true ked tam niekto je
 // vrati false a nazapise nic
-bool PlayBoard::putPlayer(int x, int y, Player *pl) {
+void PlayBoard::putPlayer(int x, int y) {
+    Player *pl = qobject_cast<Player*>(sender());
     if(m_board[y][x] == NULL) {
         m_board[y][x] = pl;
-        return true;
     }
-    return false;
 }
 
 // prebera suradnice na widgete a podla toho zavola putPlayer
-bool PlayBoard::putPlayerOriental(int x, int y, Player *pl) {
+void PlayBoard::putPlayerOriental(int x, int y) {
+    Player *pl = qobject_cast<Player*>(sender());
     int wh = m_size * m_sideSize;
     QRect boardRect(m_fromRight, m_fromTop, wh, wh);
     if(boardRect.contains(x, y)) {
         // prevedie suradnice v stvorceku na suradnice v poli
         // nastavi hraca
-        return putPlayer( (x - m_fromRight) / m_sideSize,
-                          (y - m_fromTop) / m_sideSize, pl);
+        if(m_board[y][x] == NULL) {
+            m_board[y][x] = pl;
+        }
     }
-    return false;
 }
 
-// vrati suradnice prave horneho rohu stvorceka
+// vrati suradnice laveho horneho rohu stvorceka, ktory obsahuje [x, y]
 QPoint PlayBoard::squareCoords(int x, int y) {
     int wh = m_size * m_sideSize;
     QRect boardRect(m_fromRight, m_fromTop, wh, wh);
@@ -63,22 +58,32 @@ QPoint PlayBoard::squareCoords(int x, int y) {
         // nastavi hraca
         return QPoint( ((x - m_fromRight) / m_sideSize) * m_sideSize, ((y - m_fromTop) / m_sideSize) * m_sideSize);
     }
-    return QPoint(0, 0);
+    return QPoint(-1, -1);
 }
 
-Player pl(Player::Circle, QColor(255, 0, 0));
+// vrati x a y suradnicu (zabalenu v QPoint) v poli patraciu k predanemu bodu
+QPoint PlayBoard::arrayCoords(int x, int y) {
+    QPoint corner = squareCoords(x, y);
+    if(corner == QPoint(-1, -1)) {
+        return QPoint(-1, -1);
+    }
+    return QPoint(corner.x() / m_sideSize, corner.y() / m_sideSize);
+}
 
 void PlayBoard::mouseReleaseEvent(QMouseEvent *event) {
     // suradnice kliknutia resp. uvolnenia mysi
     int x = event->x();
     int y = event->y();
 
-    // vykreslenie - o toto sa bude starat dalsia trieda, ktora
-    // moze suplovat pocitac ako hraca alebo pripojit sietoveho hraca
-    putPlayerOriental(x, y, &pl);
+    QPoint arrCoords = arrayCoords(x, y);
 
-    // po vykresleni nasleduje prekreslenie postihnutej casti hracej plochy
-    update( QRegion( QRect( squareCoords(x, y), QPoint(x + m_sideSize, y + m_sideSize) ) ) );
+    if(arrCoords != QPoint(-1, -1)) {
+        // posle signal o tom, ze doslo ku kliknutiu
+        emit squareClicked(arrCoords.x(), arrCoords.y());
+
+        // po moznom vykresleni nasleduje prekreslenie hracej plochy
+        update();
+    }
 }
 
 void PlayBoard::resizeEvent(QResizeEvent*) {
@@ -101,25 +106,9 @@ void PlayBoard::paintEvent(QPaintEvent*) {
 
             // tu pride vykreslenie kruzkov, krizikov atd.
             if(m_board[y][x] != NULL) {
-                int squareX = (x*m_sideSize + m_fromRight);
-                int squareY = (y*m_sideSize + m_fromTop);
-                Player::PlayerShape shape = m_board[y][x]->shape();
-                Player::PlayerColor color = m_board[y][x]->color();
-
-                QPen oldPen = painter.pen();
-                QPen newPen(color);
-                newPen.setWidth(3);
-                painter.setPen(newPen);
-                if(shape == Player::Circle) {
-                    // nakreslenie kruzku presne do stredu stvorceka
-                    painter.drawEllipse( squareX + 1, squareY + 1, m_sideSize - 2, m_sideSize - 2);
-                }
-                else if(shape == Player::Cross) {
-                    // nakresli krizik, na stvorcek
-                    painter.drawLine(squareX + 2, squareY + 2, squareX + m_sideSize - 2, squareY + m_sideSize - 2);
-                    painter.drawLine(squareX + m_sideSize - 2, squareY + 2, squareX + 2, squareY + m_sideSize - 2);
-                }
-                painter.setPen(oldPen);
+                int squareX = (x*m_sideSize + m_fromRight) + 1;
+                int squareY = (y*m_sideSize + m_fromTop) + 1;
+                painter.drawPixmap(squareX, squareY, m_board[y][x]->playerToe(this, QPoint(squareX, squareY), m_sideSize));
             }
         }
     }

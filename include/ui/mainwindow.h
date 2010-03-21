@@ -16,15 +16,17 @@
 
 #include <QMainWindow>
 
-class PlayBoard;
+class Game;
 
 class MainWindow : public QMainWindow {
+    Q_OBJECT
+
     public:
         MainWindow();
         ~MainWindow();
 
     private:
-        PlayBoard *m_board;
+        Game *m_game;
 };
 
 #endif // MAINWINDOW_H

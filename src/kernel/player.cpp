@@ -14,11 +14,40 @@
 #include "main.h"
 #include "kernel/player.h"
 
+#include <QPainter>
+
 int Player::sm_idGenerator = 1;
 
 // konstruktor automaticky vygeneruje ID hraca
 // no nastavenie tvaru prebieha rucne
-Player::Player(PlayerShape shape, PlayerColor col) :
-        m_id(sm_idGenerator++), m_shape(shape), m_color(col) {
+Player::Player(QObject *parent, PlayerShape shape, QColor col) :
+        QObject(parent), m_id(sm_idGenerator++), m_shape(shape), m_color(col) {
 
+}
+
+// nakresli obrazok, ktory bude obsahovat hracov kamen - to co sa kresli na plochu
+// velkost stvorca je predany
+QPixmap Player::playerToe(const QWidget *board, QPoint startAt, int size) {
+    QPixmap ret(size, size);
+    ret.fill(board, startAt);
+    QPainter painter(&ret);
+    QPen newPen(color());
+    newPen.setWidth(3);
+    painter.setPen(newPen);
+
+    if(shape() == Player::Circle) {
+        // nakreslenie kruzku presne do stredu stvorceka
+        painter.drawEllipse(0, 0, size - 2, size - 2);
+    }
+    else if(shape() == Player::Cross) {
+        // nakresli krizik, na stvorcek
+        painter.drawLine(0, 0, size, size);
+        painter.drawLine(size, 0, 0, size);
+    }
+    return ret;
+}
+
+void Player::processMove(int arrX, int arrY) {
+    // obycajny hrac proste hodi krizik na miesto
+    emit moving(arrX, arrY);
 }

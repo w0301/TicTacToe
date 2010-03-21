@@ -12,21 +12,23 @@
 */
 
 #include "main.h"
+#include "kernel/game.h"
 #include "kernel/player.h"
 #include "ui/mainwindow.h"
-#include "ui/playboard.h"
 
 #include <QtGui>
 
 MainWindow::MainWindow() : QMainWindow(NULL) {
     // nastavenie defaultnych hodnot
-    setWindowTitle(tr("TicTacToe"));
+    setWindowTitle( tr("TicTacToe") );
     setMinimumSize(405, 405);
 
-    // vytvorenie hracej plochy
-    m_board = new PlayBoard(this, DEFAULT_BOARD_SIZE);
-    setCentralWidget(m_board);
-
+    // vytvorenie novej hry a priradenie centralneho
+    // widgetu v konstruktore
+    QVector<Player*> plVec;
+    plVec.push_back(new Player(NULL, Player::Circle, Qt::red));
+    plVec.push_back(new Player(NULL, Player::Cross, Qt::blue));
+    m_game = new Game(plVec, this);
 }
 
 MainWindow::~MainWindow() {
