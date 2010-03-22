@@ -47,16 +47,20 @@ void Game::setPlayers(QVector<Player*> players) {
         i->setParent(this);
         connect(i, SIGNAL(moving(int, int)), this, SLOT(fillSquare(int, int)));
     }
-};
+}
 
-// prepne hraca, ktory je na rade na dalsieho
-void Game::incActualPlayer() {
+// prepne hraca, ktory je na rade na dalsieho a vrati
+// jeho odkaz
+Player *Game::incActualPlayer() {
     if(m_actualPlayerIndex+1 < m_players.size()) {
         m_actualPlayerIndex++;
     }
     else {
         m_actualPlayerIndex = 0;
     }
+
+    emit playerChanged(actualPlayer());
+    return actualPlayer();
 }
 
 // vrati hraca, ktory je prave na rade
@@ -80,22 +84,27 @@ void Game::fillSquare(int x, int y) {
 // slot je zavolany po kliknuti na hraciu plochu
 // ako parametre berie suradnice kliknuteho stvorceka v poli
 void Game::processPlayer(int arrX, int arrY) {
+    emit playerProcessStarted();
+
     Player *actPl = actualPlayer();
     if(actPl != NULL && !actPl->isComputer()) {
         // rucne zavolame slot, ktory zabezpeci pohyb
         // no len ked mozeme vlozit krizik
         if(square(arrX, arrY) == NULL) {
             actPl->processMove(arrX, arrY);
-            incActualPlayer();
-            actPl = actualPlayer();
+            actPl = incActualPlayer();
         }
         else {
+            emit playerProcessEnded();
             return;
         }
     }
 
-    // postarame sa o to aby sa pripdae NPC dostalo k tahu
-    if(actPl != NULL && actPl->isComputer()) {
+    // postarame sa o to aby sa pripdae NPCka alebo sietovy hraci
+    // dostali k tahu
+    while(actPl != NULL && !actPl->isOrdinary()) {
         actPl->processMove();
+        actPl = incActualPlayer();
     }
+    emit playerProcessEnded();
 }

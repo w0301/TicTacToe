@@ -32,7 +32,7 @@ class Game : public QObject {
         virtual ~Game() { };
 
         // zistenie a nastavenie hraca, ktory je na rade
-        void incActualPlayer();
+        Player *incActualPlayer();
         Player *actualPlayer() const;
 
         // vrati a nastavi vector s hracmi
@@ -68,6 +68,16 @@ class Game : public QObject {
         // ako parametre posle index zmeneneho stvorceka
         // [-1, -1] signalizuje zmenu celej plochy
         void squareBoardUpdated(int = -1, int = -1);
+
+        // signal je zavolany, ked nastane sutuacia zmenenia hraca
+        // ako parameter posiele ukazatel na noveho hraca
+        void playerChanged(Player*);
+
+        // signali su poslane na zaciatku/konci slotu processPlayer()
+        // posielanie zabezpecuje to aby nedochadzalo k spracovaniu kliknuti
+        // ktore nemaju vyznam lebo je na rade iny, halvne sietovy hrac
+        void playerProcessStarted();
+        void playerProcessEnded();
 
     private:        
         // uchovava vsetkych hracov hry

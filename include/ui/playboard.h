@@ -52,6 +52,20 @@ class PlayBoard : public QWidget {
         };
         void setGame(Game*);
 
+        // zisti ci sa moze klikat
+        bool isClickEnabled() const {
+            return m_clickEnabled;
+        };
+
+    public slots:
+        // povoli/zakaze klikanie
+        void enableClick(bool v = true) {
+            m_clickEnabled = v;
+        };
+        void disableClick() {
+            enableClick(false);
+        };
+
     signals:
         // signal je emitnuty, ked bola mys uvolnena
         // nad nejakym stvorcekom a posiela x-ovu a y-ovu suradnicu
@@ -60,6 +74,9 @@ class PlayBoard : public QWidget {
     private:
         // hra, kt. pracuje na ploche
         Game *m_game;
+
+        // urcuje ci sa maju posielat udalosti o kliknutiach
+        bool m_clickEnabled;
 
         // urcuje velkost vykreslovaneho stvoreceka
         int m_sideSize;

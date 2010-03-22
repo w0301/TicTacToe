@@ -49,15 +49,25 @@ class Player : public QObject {
 
         // vrati true, ked je hrac ovladany pocitacom
         // reimplementuje sa v ComputerPlayer
-        virtual bool isComputer() {
+        virtual bool isComputer() const {
             return false;
+        };
+
+        // vrati true, ked je hrac sietovi
+        virtual bool isNetwork() const {
+            return false;
+        };
+
+        // zisti ci je hrac obycajny - zivy a lokalny
+        bool isOrdinary() const {
+            return !isComputer() && !isNetwork();
         };
 
         // vrati obrazok pre hracov kruzok, krizik atd.
         QPixmap playerToe(const QWidget*, QPoint, int);
 
     public slots:
-        virtual void processMove(int = 0, int = 0);
+        virtual void processMove(int = -1, int = -1);
 
     signals:
         // signal je poslany, ked aktualny hrac dava kamen na plochu

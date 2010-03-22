@@ -19,7 +19,8 @@
 #include <QtGui>
 
 PlayBoard::PlayBoard(QWidget *parent,  Game *game) :
-        QWidget(parent), m_game(NULL), m_sideSize(0), m_fromRight(0), m_fromTop(0) {
+        QWidget(parent), m_game(NULL),m_clickEnabled(false), m_sideSize(0), m_fromRight(0), m_fromTop(0) {
+    // plocha sa zatial neda pouzit => nemusime ju ukazovat
     hide();
     setGame(game);
 }
@@ -28,8 +29,18 @@ PlayBoard::PlayBoard(QWidget *parent,  Game *game) :
 void PlayBoard::setGame(Game *game) {
     m_game = game;
     if(m_game != NULL) {
+        // ked hra zmeni backend plochu musime znova vykreslit
         connect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(update()));
+
+        // ked nastane kliknutie musime poslat hre suradnice stvorceka, kde sa kliklo
         connect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processPlayer(int, int)));
+
+        // zabezpecime spravu kliknuti
+        enableClick();
+        connect(m_game, SIGNAL(playerProcessStarted()), this, SLOT(disableClick()));
+        connect(m_game, SIGNAL(playerProcessEnded()), this, SLOT(enableClick()));
+
+        // plocha je pouzitelna => ukazeme ju
         show();
     }
 }
@@ -60,6 +71,11 @@ QPoint PlayBoard::arrayCoords(int x, int y) {
 }
 
 void PlayBoard::mouseReleaseEvent(QMouseEvent *event) {
+    // mame posielat spravu o kliknuti?
+    if(!isClickEnabled()) {
+        return;
+    }
+
     // suradnice kliknutia resp. uvolnenia mysi
     int x = event->x();
     int y = event->y();
