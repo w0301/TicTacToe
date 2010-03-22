@@ -33,7 +33,7 @@ void PlayBoard::setGame(Game *game) {
         connect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(update()));
 
         // ked nastane kliknutie musime poslat hre suradnice stvorceka, kde sa kliklo
-        connect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processPlayer(int, int)));
+        connect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processActualPlayer(int, int)));
 
         // zabezpecime spravu kliknuti
         enableClick();

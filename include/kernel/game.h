@@ -60,8 +60,8 @@ class Game : public QObject {
         void setSquareBoardSize(int);
 
     public slots:
-        void fillSquare(int, int);
-        void processPlayer(int, int);
+        void fillSquare(int, int, Player*);
+        void processActualPlayer(int, int);
 
     signals:
         // posle signal o tom, ze doslo k zmene na hracej ploche
@@ -69,9 +69,16 @@ class Game : public QObject {
         // [-1, -1] signalizuje zmenu celej plochy
         void squareBoardUpdated(int = -1, int = -1);
 
+        // posle signal o tom, ktory stvorcek a cim bol naplneny
+        void squareFilled(int, int, Player*);
+
         // signal je zavolany, ked nastane sutuacia zmenenia hraca
         // ako parameter posiele ukazatel na noveho hraca
         void playerChanged(Player*);
+
+        // signal je poslany, ked nejaky hrac vyhra hru
+        // ako parameter posiela ukazatel na tohoto hraca
+        void playerWon(Player*);
 
         // signali su poslane na zaciatku/konci slotu processPlayer()
         // posielanie zabezpecuje to aby nedochadzalo k spracovaniu kliknuti

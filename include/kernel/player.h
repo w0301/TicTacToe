@@ -68,10 +68,12 @@ class Player : public QObject {
 
     public slots:
         virtual void processMove(int = -1, int = -1);
+        virtual void updateBoard(int, int, Player*);
 
     signals:
-        // signal je poslany, ked aktualny hrac dava kamen na plochu
-        void moving(int, int);
+        // signal je poslany, ked hrac dava kamen na plochu
+        // posiela suradnice noveha kamena a jeho majitela - this pointer
+        void moving(int, int, Player*);
 
     private:
         // kazdy hrac bude mat unikatne ID

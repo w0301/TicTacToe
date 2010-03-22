@@ -47,7 +47,17 @@ QPixmap Player::playerToe(const QWidget *board, QPoint startAt, int size) {
     return ret;
 }
 
+// slot je zavolany (zvatsa rucne) ked ma aktualny hrac tahat
+// jeho ulohou je tah vykonat a o tahu signalizovat signalom moving(int, int)
 void Player::processMove(int arrX, int arrY) {
     // obycajny hrac proste hodi krizik na miesto
-    emit moving(arrX, arrY);
+    emit moving(arrX, arrY, this);
+}
+
+// tento slot je zavolany signalom Game::squareBoardUpdated
+// jeho ulohou je zabezpecit to aby sa sietova hra dozvedela o tom,
+// ze nastal pohyb - sietovi hrac dava vediet svojej domovskej hre
+// co sa udialala za hranicami :) - pre lokalneho hraca prazdne
+void Player::updateBoard(int, int, Player*) {
+
 }

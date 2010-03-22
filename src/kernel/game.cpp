@@ -45,7 +45,10 @@ void Game::setPlayers(QVector<Player*> players) {
     // pripojime signal kazdeho hraca k slotu plochy a nastavime rodica
     foreach(Player *i, m_players) {
         i->setParent(this);
-        connect(i, SIGNAL(moving(int, int)), this, SLOT(fillSquare(int, int)));
+        connect(i, SIGNAL(moving(int, int, Player*)), this, SLOT(fillSquare(int, int, Player*)));
+
+        // musime dat vediet hracovi ze sa zmenila plocha - mozno to bude chciet poslat cez siet domov
+        connect(this, SIGNAL(squareFilled(int, int, Player*)), i, SLOT(updateBoard(int, int, Player*)));
     }
 }
 
@@ -73,17 +76,21 @@ Player *Game::actualPlayer() const {
 
 // slot zapise na poziciu [x, y] hraca pl, samozrejme
 // pokial tam nieje uz iny hrac - moze byt volane iba cez signal
-void Game::fillSquare(int x, int y) {
-    Player *pl = qobject_cast<Player*>(sender());
+void Game::fillSquare(int x, int y, Player *pl) {
     if(m_squareBoard[y][x] == NULL) {
         m_squareBoard[y][x] = pl;
+
+        // dame vediet widgetu - aby sa prekreslil
         emit squareBoardUpdated(x, y);
+
+        // dame vediet vsetkym hracom - aby to mohli pripadne dat vediet cez siet domov
+        emit squareFilled(x, y, pl);
     }
 }
 
 // slot je zavolany po kliknuti na hraciu plochu
 // ako parametre berie suradnice kliknuteho stvorceka v poli
-void Game::processPlayer(int arrX, int arrY) {
+void Game::processActualPlayer(int arrX, int arrY) {
     emit playerProcessStarted();
 
     Player *actPl = actualPlayer();
