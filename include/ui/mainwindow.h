@@ -17,6 +17,7 @@
 #include <QMainWindow>
 
 class Game;
+class PlayBoard;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -27,6 +28,7 @@ class MainWindow : public QMainWindow {
 
     private:
         Game *m_game;
+        PlayBoard *m_playBoard;
 };
 
 #endif // MAINWINDOW_H

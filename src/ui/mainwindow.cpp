@@ -15,6 +15,7 @@
 #include "kernel/game.h"
 #include "kernel/player.h"
 #include "ui/mainwindow.h"
+#include "ui/playboard.h"
 
 #include <QtGui>
 
@@ -25,10 +26,17 @@ MainWindow::MainWindow() : QMainWindow(NULL) {
 
     // vytvorenie novej hry a priradenie centralneho
     // widgetu v konstruktore
+    m_game = new Game(this, DEFAULT_BOARD_SIZE, DEFAULT_TIME_LIMIT);
+
+    // pridanie hracov
     QVector<Player*> plVec;
     plVec.push_back(new Player(NULL, Player::Circle, Qt::red));
     plVec.push_back(new Player(NULL, Player::Cross, Qt::blue));
-    m_game = new Game(plVec, this);
+    m_game->setPlayers(plVec);
+
+    // vytvorenie plochy
+    m_playBoard = new PlayBoard(this, m_game);
+    setCentralWidget(m_playBoard);
 }
 
 MainWindow::~MainWindow() {

@@ -18,22 +18,38 @@
 
 #include <Qt>
 
-Game::Game(QVector<Player*> players, MainWindow *parent, int size, int time) :
-        QObject(parent), m_players(players), m_actualPlayerIndex(0), m_playBoard( new PlayBoard(parent, size) ),
-        m_timeLimit(time) {
-    // rodic dostane centralny widget
-    parent->setCentralWidget(m_playBoard);
+Game::Game(QVector<Player*> players, QObject *parent, int size, int time) :
+        QObject(parent), m_players(), m_actualPlayerIndex(0),
+        m_squareBoard(), m_squareCount(size), m_timeLimit(time) {
+    setPlayers(players);
+    setSquareBoardSize(m_squareCount);
+}
 
-    // pripojima signal, ktory je poslany pri kliknuti na plochu
-    connect(m_playBoard, SIGNAL(squareClicked(int,int)), this, SLOT(processPlayer(int, int)));
+Game::Game(QObject *parent, int size, int time) :
+        QObject(parent), m_players(), m_actualPlayerIndex(0),
+        m_squareBoard(), m_squareCount(size), m_timeLimit(time) {
+    setSquareBoardSize(m_squareCount);
+}
+
+void Game::setSquareBoardSize(int size) {
+    m_squareBoard.resize(size);
+    for(int i = 0; i != size; i++) {
+        m_squareBoard[i].resize(size);
+    }
+}
+
+// nastaci novy vektor s hracmi
+void Game::setPlayers(QVector<Player*> players) {
+    m_players = players;
 
     // pripojime signal kazdeho hraca k slotu plochy a nastavime rodica
     foreach(Player *i, m_players) {
         i->setParent(this);
-        connect(i, SIGNAL(moving(int,int)), m_playBoard, SLOT(putPlayer(int, int)));
+        connect(i, SIGNAL(moving(int, int)), this, SLOT(fillSquare(int, int)));
     }
-}
+};
 
+// prepne hraca, ktory je na rade na dalsieho
 void Game::incActualPlayer() {
     if(m_actualPlayerIndex+1 < m_players.size()) {
         m_actualPlayerIndex++;
@@ -43,12 +59,23 @@ void Game::incActualPlayer() {
     }
 }
 
+// vrati hraca, ktory je prave na rade
 Player *Game::actualPlayer() const {
     if(m_actualPlayerIndex >= m_players.size()) {
         return NULL;
     }
     return m_players[m_actualPlayerIndex];
 };
+
+// slot zapise na poziciu [x, y] hraca pl, samozrejme
+// pokial tam nieje uz iny hrac - moze byt volane iba cez signal
+void Game::fillSquare(int x, int y) {
+    Player *pl = qobject_cast<Player*>(sender());
+    if(m_squareBoard[y][x] == NULL) {
+        m_squareBoard[y][x] = pl;
+        emit squareBoardUpdated(x, y);
+    }
+}
 
 // slot je zavolany po kliknuti na hraciu plochu
 // ako parametre berie suradnice kliknuteho stvorceka v poli
@@ -57,7 +84,7 @@ void Game::processPlayer(int arrX, int arrY) {
     if(actPl != NULL && !actPl->isComputer()) {
         // rucne zavolame slot, ktory zabezpeci pohyb
         // no len ked mozeme vlozit krizik
-        if(m_playBoard->playerOn(arrX, arrY) == NULL) {
+        if(square(arrX, arrY) == NULL) {
             actPl->processMove(arrX, arrY);
             incActualPlayer();
             actPl = actualPlayer();

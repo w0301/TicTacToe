@@ -15,31 +15,24 @@
 #define PLAYBOARD_H
 
 #include <QWidget>
-#include <QVector>
 
+class Game;
 class Player;
 
 class PlayBoard : public QWidget {
     Q_OBJECT
 
     public:
-        // vytvori hraciu plochu a znici ju
-        PlayBoard(QWidget*, int);
-        ~PlayBoard() { };
+        // vytvori hraciu plochu s rodicom a Game objektom,
+        // ktory na nej pracuje
+        PlayBoard(QWidget*, Game*);
 
-        // vrati pocet stvorcekov na jednom riadku
-        int squareCount() const {
-            return m_size;
-        };
+        // mozno budu derivati, kt. budu upravovat vzhlad
+        virtual ~PlayBoard() { };
 
         // suradnice na ploche a v poli
         QPoint squareCoords(int, int);
         QPoint arrayCoords(int, int);
-
-        // vrati hraca na stvorceku
-        Player *playerOn(int x, int y) {
-            return m_board[y][x];
-        };
 
         // postara sa o priradenie hracov na plochu
         void mouseReleaseEvent(QMouseEvent*);
@@ -50,10 +43,14 @@ class PlayBoard : public QWidget {
         // nakresli hraciu plochu
         void paintEvent(QPaintEvent*);
 
-    public slots:
-        // sloty daju kamen na plochu
-        void putPlayer(int, int);
-        void putPlayerOriental(int, int);
+        // vrati a nastavi hru
+        Game *game() {
+            return m_game;
+        };
+        const Game *game() const {
+            return m_game;
+        };
+        void setGame(Game*);
 
     signals:
         // signal je emitnuty, ked bola mys uvolnena
@@ -61,11 +58,8 @@ class PlayBoard : public QWidget {
         void squareClicked(int, int);
 
     private:
-        // uchovava info o jednotlivich stvorcekoch
-        QVector< QVector<Player*> > m_board;
-
-        // uchovava dlzku resp. vysku plochy v stvorcekoch
-        int m_size;
+        // hra, kt. pracuje na ploche
+        Game *m_game;
 
         // urcuje velkost vykreslovaneho stvoreceka
         int m_sideSize;
