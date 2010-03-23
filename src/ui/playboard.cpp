@@ -125,7 +125,7 @@ void PlayBoard::paintEvent(QPaintEvent*) {
             if(game()->square(x, y) != NULL) {
                 int squareX = (x*m_sideSize + m_fromRight) + 1;
                 int squareY = (y*m_sideSize + m_fromTop) + 1;
-                painter.drawPixmap(squareX, squareY, game()->square(x, y)->playerToe(this, QPoint(squareX, squareY), m_sideSize));
+                painter.drawPixmap(squareX, squareY, game()->square(x, y)->playerToe(this, QPoint(squareX, squareY), m_sideSize - 1));
             }
         }
     }
