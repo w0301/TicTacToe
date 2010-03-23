@@ -30,8 +30,8 @@ MainWindow::MainWindow() : QMainWindow(NULL) {
 
     // pridanie hracov
     QVector<Player*> plVec;
-    plVec.push_back(new Player(NULL, Player::Circle, Qt::red));
-    plVec.push_back(new Player(NULL, Player::Cross, Qt::blue));
+    plVec.push_back(new Player(NULL, new CirclePlayerSign(Qt::red)));
+    plVec.push_back(new Player(NULL, new CrossPlayerSign(Qt::blue)));
     m_game->setPlayers(plVec);
 
     // vytvorenie plochy

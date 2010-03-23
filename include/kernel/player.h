@@ -22,29 +22,80 @@
 
 class QWidget;
 
+// abstraktny predok "podpisu" hraca na ploche
+class PlayerSign {
+    public:
+        PlayerSign() { } ;
+        virtual ~PlayerSign() { } ;
+
+        // vrati pixmapu parametre - widget s ktoreho prekoporije pozadie,
+        // bod s ktoreho zacne brat udaje z widgetu, velkost stvorceka widgetu
+        virtual QPixmap signPixmap(const QWidget*, QPoint, int) = 0;
+};
+
+// trieda pre rucne nakresene "podpisy hracov na ploche"
+class PaintedPlayerSign : public PlayerSign {
+    public:
+        PaintedPlayerSign(const QColor&);
+        PaintedPlayerSign(const PaintedPlayerSign&);
+        virtual ~PaintedPlayerSign() { } ;
+
+        PaintedPlayerSign& operator= (const PaintedPlayerSign&);
+
+        // praca s farbou
+        QColor& color() {
+            return m_color;
+        };
+        const QColor& color() const {
+            return m_color;
+        };
+        void setColor(const QColor& col) {
+            m_color = col;
+        };
+
+    private:
+        QColor m_color;
+};
+
+// trieda pre nakreslenie kruzku
+class CirclePlayerSign : public PaintedPlayerSign {
+    public:
+        CirclePlayerSign(const QColor&);
+        CirclePlayerSign(const CirclePlayerSign&);
+        virtual ~CirclePlayerSign() { } ;
+
+        CirclePlayerSign& operator= (const CirclePlayerSign&);
+
+        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+};
+
+// trieda pre nakreslenie krizika
+class CrossPlayerSign : public PaintedPlayerSign {
+    public:
+        CrossPlayerSign(const QColor&);
+        CrossPlayerSign(const CrossPlayerSign&);
+        virtual ~CrossPlayerSign() { } ;
+
+        CrossPlayerSign& operator= (const CrossPlayerSign&);
+
+        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+};
+
+
+// trieda hraca
 class Player : public QObject {
     Q_OBJECT
 
     public:
-        // enumeracie, ktore urcuju to ako
-        // bude vyzerat hrac na hracej ploche
-        enum PlayerShape {
-            Circle,
-            Cross
-        };
-
-        Player(QObject*, PlayerShape, QColor);
-        virtual ~Player() { };
+        Player(QObject*, PlayerSign*);
+        virtual ~Player();
 
         // klasicke pristupove funkcie
         int id() const {
             return m_id;
         };
-        PlayerShape shape() const {
-            return m_shape;
-        };
-        QColor color() const {
-            return m_color;
+        PlayerSign *sign() const {
+            return m_sign;
         };
 
         // vrati true, ked je hrac ovladany pocitacom
@@ -63,9 +114,6 @@ class Player : public QObject {
             return !isComputer() && !isNetwork();
         };
 
-        // vrati obrazok pre hracov kruzok, krizik atd.
-        QPixmap playerToe(const QWidget*, QPoint, int);
-
     public slots:
         virtual void processMove(int = -1, int = -1);
         virtual void updateBoard(int, int, Player*);
@@ -82,9 +130,8 @@ class Player : public QObject {
         // IDcko bude generovane automaticky
         static int sm_idGenerator;
 
-        // tvar a farba hraca
-        PlayerShape m_shape;
-        QColor m_color;
+        // trieda, ktora kresli hraca na plochu
+        PlayerSign *m_sign;
 };
 
 #endif // PLAYER_H

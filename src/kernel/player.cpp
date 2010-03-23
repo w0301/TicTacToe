@@ -16,18 +16,42 @@
 
 #include <QPainter>
 
-int Player::sm_idGenerator = 1;
-
-// konstruktor automaticky vygeneruje ID hraca
-// no nastavenie tvaru prebieha rucne
-Player::Player(QObject *parent, PlayerShape shape, QColor col) :
-        QObject(parent), m_id(sm_idGenerator++), m_shape(shape), m_color(col) {
+//| PaintedPlayerSign class
+PaintedPlayerSign::PaintedPlayerSign(const QColor& col) :
+        m_color(col) {
 
 }
 
-// nakresli obrazok, ktory bude obsahovat hracov kamen - to co sa kresli na plochu
-// velkost stvorca je predany
-QPixmap Player::playerToe(const QWidget *board, QPoint startAt, int size) {
+PaintedPlayerSign::PaintedPlayerSign(const PaintedPlayerSign& from) :
+        m_color(from.color()) {
+
+}
+
+PaintedPlayerSign& PaintedPlayerSign::operator= (const PaintedPlayerSign& from) {
+    if(&from != this) {
+        setColor( from.color() );
+    }
+    return *this;
+}
+
+//| CirclePlayerSign class
+CirclePlayerSign::CirclePlayerSign(const QColor& col) :
+        PaintedPlayerSign(col) {
+
+}
+
+CirclePlayerSign::CirclePlayerSign(const CirclePlayerSign& from) :
+        PaintedPlayerSign(from) {
+
+}
+
+CirclePlayerSign& CirclePlayerSign::operator= (const CirclePlayerSign& from) {
+    PaintedPlayerSign::operator= (from);
+    return *this;
+}
+
+QPixmap CirclePlayerSign::signPixmap(const QWidget *board, QPoint startAt, int size) {
+    // nastavenie kresliacej plochy
     QPixmap ret(size, size);
     ret.fill(board, startAt);
     QPainter painter(&ret);
@@ -35,16 +59,59 @@ QPixmap Player::playerToe(const QWidget *board, QPoint startAt, int size) {
     newPen.setWidth(3);
     painter.setPen(newPen);
 
-    if(shape() == Player::Circle) {
-        // nakreslenie kruzku presne do stredu stvorceka
-        painter.drawEllipse(0, 0, size - 2, size - 2);
-    }
-    else if(shape() == Player::Cross) {
-        // nakresli krizik, na stvorcek
-        painter.drawLine(0, 0, size, size);
-        painter.drawLine(size, 0, 0, size);
-    }
+    // nakreslenie kruzku presne do stredu stvorceka
+    painter.drawEllipse(0, 0, size - 2, size - 2);
+
     return ret;
+}
+
+//| CrossPlayerSign class
+CrossPlayerSign::CrossPlayerSign(const QColor& col) :
+        PaintedPlayerSign(col) {
+
+}
+
+CrossPlayerSign::CrossPlayerSign(const CrossPlayerSign& from) :
+        PaintedPlayerSign(from) {
+
+}
+
+CrossPlayerSign& CrossPlayerSign::operator= (const CrossPlayerSign& from) {
+    PaintedPlayerSign::operator= (from);
+    return *this;
+}
+
+QPixmap CrossPlayerSign::signPixmap(const QWidget *board, QPoint startAt, int size) {
+    // nastavenie kresliacej plochy
+    QPixmap ret(size, size);
+    ret.fill(board, startAt);
+    QPainter painter(&ret);
+    QPen newPen(color());
+    newPen.setWidth(3);
+    painter.setPen(newPen);
+
+    // nakresli krizik na stvorcek
+    painter.drawLine(0, 0, size, size);
+    painter.drawLine(size, 0, 0, size);
+
+    return ret;
+}
+
+
+//| Player class
+int Player::sm_idGenerator = 1;
+
+// konstruktor automaticky vygeneruje ID hraca
+// no nastavenie triedy, ktora vykresli podpis prebehne rucne
+Player::Player(QObject *parent, PlayerSign *sign) :
+        QObject(parent), m_id(sm_idGenerator++), m_sign(sign) {
+
+}
+
+Player::~Player() {
+    if(m_sign != NULL) {
+        delete m_sign;
+    }
 }
 
 // slot je zavolany (zvatsa rucne) ked ma aktualny hrac tahat
