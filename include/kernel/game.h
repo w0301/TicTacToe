@@ -27,13 +27,18 @@ class Game : public QObject {
     Q_OBJECT
 
     public:
-        Game(QVector<Player*>, QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT);
-        Game(QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT);
+        // konstrutkory
+        Game(QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
+        Game(QVector<Player*>, QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
+
         virtual ~Game() { };
 
         // zistenie a nastavenie hraca, ktory je na rade
         Player *incActualPlayer();
         Player *actualPlayer() const;
+        void setActualPlayerIndex(int i) {
+            m_actualPlayerIndex = i;
+        };
 
         // vrati a nastavi vector s hracmi
         QVector<Player*>& players() {
@@ -59,18 +64,26 @@ class Game : public QObject {
         };
         void setSquareBoardSize(int);
 
+        // vrati a nastavi pocet kamenov na vytazstvo
+        int winStonesCount() const {
+            return m_toWin;
+        };
+        void setWinStonesCount(int c) {
+            m_toWin = c;
+        };
+
     public slots:
         void fillSquare(int, int, Player*);
+        void testWinner(int, int, Player*) const;
         void processActualPlayer(int, int);
+        void resetGame();
 
     signals:
         // posle signal o tom, ze doslo k zmene na hracej ploche
         // ako parametre posle index zmeneneho stvorceka
-        // [-1, -1] signalizuje zmenu celej plochy
-        void squareBoardUpdated(int = -1, int = -1);
-
-        // posle signal o tom, ktory stvorcek a cim bol naplneny
-        void squareFilled(int, int, Player*);
+        // [-1, -1] signalizuje zmenu celej plochy, parameter Player
+        // je pouzity iba pri odosielani objektom hracov
+        void squareBoardUpdated(int = -1, int = -1, Player* = NULL);
 
         // signal je zavolany, ked nastane sutuacia zmenenia hraca
         // ako parameter posiele ukazatel na noveho hraca
@@ -78,7 +91,7 @@ class Game : public QObject {
 
         // signal je poslany, ked nejaky hrac vyhra hru
         // ako parameter posiela ukazatel na tohoto hraca
-        void playerWon(Player*);
+        void playerWon(Player*) const;
 
         // signali su poslane na zaciatku/konci slotu processPlayer()
         // posielanie zabezpecuje to aby nedochadzalo k spracovaniu kliknuti
@@ -101,6 +114,10 @@ class Game : public QObject {
 
         // uchovava time limit pre tah
         int m_timeLimit;
+
+        // uchovava cislo, kt. urcuje kolko kamenov, podpisov musi
+        // byt v rade na vytazstvo
+        int m_toWin;
 };
 
 #endif // GAME_H
