@@ -28,15 +28,15 @@ MainWindow::MainWindow() : QMainWindow(NULL) {
     // widgetu v konstruktore
     m_game = new Game(this);
 
-    // pridanie hracov
-    QVector<Player*> plVec;
-    plVec.push_back(new Player(NULL, new CirclePlayerSign(Qt::red)));
-    plVec.push_back(new Player(NULL, new CrossPlayerSign(Qt::blue)));
-    m_game->setPlayers(plVec);
-
     // vytvorenie plochy
     m_playBoard = new PlayBoard(this, m_game);
     setCentralWidget(m_playBoard);
+
+    // pridanie hracov a spustenie hry
+    QVector<Player*> plVec;
+    plVec.push_back(new Player(NULL, new CirclePlayerSign(Qt::red)));
+    plVec.push_back(new Player(NULL, new CrossPlayerSign(Qt::blue)));
+    m_game->startGame(plVec);
 }
 
 MainWindow::~MainWindow() {

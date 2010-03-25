@@ -122,10 +122,20 @@ class Game : public QObject {
             m_toWin = c;
         };
 
+        // je hra spustena?
+        bool isRunning() const {
+            return m_isRunning;
+        };
+
     public slots:
         void fillSquare(int, int, Player*);
         void testWinner(int, int, Player*);
         void processActualPlayer(int, int);
+
+        // spustanie hry a pod
+        void startGame(const QVector<Player*>&);
+        void startGame();
+        void stopGame();
         void resetGame();
 
     signals:
@@ -138,6 +148,14 @@ class Game : public QObject {
         // signal je zavolany, ked nastane sutuacia zmenenia hraca
         // ako parameter posiele ukazatel na noveho hraca
         void playerChanged(Player*);
+
+        // signal je poslany ked je hra zacata
+        // ako parameter posiela prveho hraca, kt. je aj na tahu
+        void gameStarted(Player*);
+
+        // signal je poslany, ked je hra zastavena funkciou
+        // stopGame
+        void gameStopped();
 
         // signal je poslany, ked nejaky hrac vyhra hru
         // ako parameter posiela ukazatel na tohoto hraca
@@ -159,6 +177,9 @@ class Game : public QObject {
 
         // uchovava info o jednotlivich stvorcekoch
         QVector< QVector<Square> > m_squareBoard;
+
+        // je hra spustena?
+        bool m_isRunning;
 
         // uchovava dlzku resp. vysku plochy v stvorcekoch
         int m_squareCount;

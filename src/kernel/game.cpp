@@ -18,19 +18,23 @@
 
 #include <Qt>
 
+// vytvori objekt a spusti hru
 Game::Game(QVector<Player*> players, QObject *parent, int size, int time, int toWin) :
-        QObject(parent), m_players(), m_actualPlayerIndex(0),
-        m_squareBoard(), m_squareCount(size), m_timeLimit(time), m_toWin(toWin) {
-    setPlayers(players);
+        QObject(parent), m_players(), m_actualPlayerIndex(0), m_squareBoard(),
+        m_isRunning(false), m_squareCount(size), m_timeLimit(time), m_toWin(toWin) {
     setSquareBoardSize(m_squareCount);
+    startGame(players);
 }
 
+// iba vytvori objekt, hru nespusta
 Game::Game(QObject *parent, int size, int time, int toWin) :
-        QObject(parent), m_players(), m_actualPlayerIndex(0),
-        m_squareBoard(), m_squareCount(size), m_timeLimit(time), m_toWin(toWin) {
+        QObject(parent), m_players(), m_actualPlayerIndex(0), m_squareBoard(),
+        m_isRunning(false), m_squareCount(size), m_timeLimit(time), m_toWin(toWin) {
     setSquareBoardSize(m_squareCount);
 }
 
+// nastavi novu velkost plochy hry - plocha je
+// zvacsena/zmensena a prvky su zachovane
 void Game::setSquareBoardSize(int size) {
     m_squareBoard.resize(size);
     for(int i = 0; i != size; i++) {
@@ -38,8 +42,11 @@ void Game::setSquareBoardSize(int size) {
     }
 }
 
-// nastaci novy vektor s hracmi
+// nastaci novy vektor s hracmi - indikuje zaciatok hry
 void Game::setPlayers(QVector<Player*> players) {
+    if(players.size() < 2) {
+        return;
+    }
     m_players = players;
 
     // pripojime signal kazdeho hraca k slotu plochy a nastavime rodica
@@ -275,8 +282,45 @@ void Game::processActualPlayer(int arrX, int arrY) {
     emit playerProcessEnded();
 }
 
+// spusti hru, ktora uz ma hracov
+void Game::startGame() {
+    if(isRunning()) {
+        return;
+    }
+    setActualPlayerIndex(0);
+    m_isRunning = true;
+    emit gameStarted(actualPlayer());
+}
+
+// spusti hru s predanymi hracmi
+void Game::startGame(const QVector<Player*>& players) {
+    if(isRunning() || players.size() < 2) {
+        return;
+    }
+    setPlayers(players);
+    startGame();
+}
+
+// zastavi hru - vycisti plochu, vycisti pole hracov
+// a nastavi premennu m_isRunning
+void Game::stopGame() {
+    m_squareBoard.clear();
+    setSquareBoardSize(squareBoardSize());
+    m_players.clear();
+    setActualPlayerIndex(0);
+    m_isRunning = false;
+
+    // posleme signaly
+    emit gameStopped();
+    emit squareBoardUpdated(CLEAR, CLEAR);
+}
+
 // vycisti pole kamenov a posle signal o update hry
+// no signal o zacati neposiela - reset != start!
 void Game::resetGame() {
+    if(!isRunning()) {
+        return;
+    }
     m_squareBoard.clear();
     setSquareBoardSize(squareBoardSize());
     setActualPlayerIndex(0);
