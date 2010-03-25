@@ -16,6 +16,11 @@
 
 #define DEFAULT_BOARD_SIZE 20
 #define DEFAULT_WIN_STONES 5
+#define DEFAULT_WINANIM_TIME 5000
 #define DEFAULT_TIME_LIMIT 0
+
+// pre update plochy - vpodstate potrebne iba pre sietovych hracov
+#define CLEAR -100
+#define WHOLE -1
 
 #endif // MAIN_H

@@ -27,7 +27,6 @@ MainWindow::MainWindow() : QMainWindow(NULL) {
     // vytvorenie novej hry a priradenie centralneho
     // widgetu v konstruktore
     m_game = new Game(this);
-    connect(m_game, SIGNAL(playerWon(Player*)), m_game, SLOT(resetGame()));
 
     // pridanie hracov
     QVector<Player*> plVec;

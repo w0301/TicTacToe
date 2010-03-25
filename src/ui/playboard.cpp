@@ -18,8 +18,10 @@
 
 #include <QtGui>
 
-PlayBoard::PlayBoard(QWidget *parent,  Game *game) :
-        QWidget(parent), m_game(NULL),m_clickEnabled(false), m_sideSize(0), m_fromRight(0), m_fromTop(0) {
+
+// PlayBoard class
+PlayBoard::PlayBoard(QWidget *parent, Game *game) :
+        QWidget(parent), m_game(NULL), m_clickEnabled(false), m_sideSize(0), m_fromLeft(0), m_fromTop(0) {
     // plocha sa zatial neda pouzit => nemusime ju ukazovat
     hide();
     setGame(game);
@@ -30,19 +32,33 @@ void PlayBoard::setGame(Game *game) {
     m_game = game;
     if(m_game != NULL) {
         // ked hra zmeni backend plochu musime znova vykreslit
-        connect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(update()));
+        connect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(repaint(int, int)));
 
         // ked nastane kliknutie musime poslat hre suradnice stvorceka, kde sa kliklo
         connect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processActualPlayer(int, int)));
 
         // zabezpecime spravu kliknuti
-        enableClick();
         connect(m_game, SIGNAL(playerProcessStarted()), this, SLOT(disableClick()));
         connect(m_game, SIGNAL(playerProcessEnded()), this, SLOT(enableClick()));
 
+        // prime signal o vyhre a zastavi plochu
+        connect(m_game, SIGNAL(playerWon(Player*)), this, SLOT(stopBoard()));
+
         // plocha je pouzitelna => ukazeme ju
         show();
+
+        // => aj ju spustime
+        startBoard();
     }
+}
+
+void PlayBoard::startBoard() {
+    enableClick();
+    m_isRunning = true;
+}
+
+void PlayBoard::stopBoard() {
+    m_isRunning = false;
 }
 
 // vrati suradnice laveho horneho rohu stvorceka, ktory obsahuje [x, y]
@@ -52,11 +68,11 @@ QPoint PlayBoard::squareCoords(int x, int y) {
     }
 
     int wh = game()->squareBoardSize() * m_sideSize;
-    QRect boardRect(m_fromRight, m_fromTop, wh, wh);
+    QRect boardRect(m_fromLeft, m_fromTop, wh, wh);
     if(boardRect.contains(x, y)) {
         // prevedie suradnice v stvorceku na suradnice v poli
         // nastavi hraca
-        return QPoint( ((x - m_fromRight) / m_sideSize) * m_sideSize, ((y - m_fromTop) / m_sideSize) * m_sideSize);
+        return QPoint( ((x - m_fromLeft) / m_sideSize) * m_sideSize, ((y - m_fromTop) / m_sideSize) * m_sideSize);
     }
     return QPoint(-1, -1);
 }
@@ -70,9 +86,20 @@ QPoint PlayBoard::arrayCoords(int x, int y) {
     return QPoint(corner.x() / m_sideSize, corner.y() / m_sideSize);
 }
 
+// prekresli jeden stvorcek
+void PlayBoard::repaint(int x, int y) {
+    if(x != WHOLE && y != WHOLE) {
+        QWidget::repaint( QRect( QPoint(x * m_sideSize + m_fromLeft, y * m_sideSize + m_fromTop), QSize(m_sideSize, m_sideSize) ) );
+    }
+    else {
+        QWidget::repaint();
+    }
+}
+
+// spracovanie eventov
 void PlayBoard::mouseReleaseEvent(QMouseEvent *event) {
     // mame posielat spravu o kliknuti?
-    if(!isClickEnabled()) {
+    if(!isClickEnabled() || !isRunning()) {
         return;
     }
 
@@ -102,7 +129,7 @@ void PlayBoard::resizeEvent(QResizeEvent*) {
 
     // postara sa o vycentrovanie plochy na widgete
     m_fromTop = (height() - m_sideSize * sqCount) / 2;
-    m_fromRight = (width() - m_sideSize * sqCount) / 2;
+    m_fromLeft = (width() - m_sideSize * sqCount) / 2;
 }
 
 void PlayBoard::paintEvent(QPaintEvent*) {
@@ -119,13 +146,24 @@ void PlayBoard::paintEvent(QPaintEvent*) {
     for(int y = 0; y != sqCount; y++) {
         for(int x = 0; x != sqCount; x++) {
             // vykreslenie prazdneho stvorceka
-            painter.drawRect(x*m_sideSize + m_fromRight, y*m_sideSize + m_fromTop, m_sideSize, m_sideSize);
+            painter.drawRect(x*m_sideSize + m_fromLeft, y*m_sideSize + m_fromTop, m_sideSize, m_sideSize);
 
             // tu pride vykreslenie kruzkov, krizikov atd.
             if(game()->square(x, y) != NULL) {
-                int squareX = (x*m_sideSize + m_fromRight) + 1;
+                int squareX = (x*m_sideSize + m_fromLeft) + 1;
                 int squareY = (y*m_sideSize + m_fromTop) + 1;
                 painter.drawPixmap(squareX, squareY, game()->square(x, y)->sign()->signPixmap(this, QPoint(squareX, squareY), m_sideSize - 1));
+
+                // ked su stvorceky vytazne preciarkneme ich
+                if(game()->square(x, y).isWinning()) {
+                    QPen oldPen = painter.pen();
+                    QPen newPen(QColor(255, 255, 255));
+                    newPen.setWidth(3);
+
+                    painter.setPen(newPen);
+                    painter.drawLine(squareX, squareY, squareX + m_sideSize, squareY + m_sideSize);
+                    painter.setPen(oldPen);
+                }
             }
         }
     }

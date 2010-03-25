@@ -14,11 +14,15 @@
 #ifndef PLAYBOARD_H
 #define PLAYBOARD_H
 
+#include "main.h"
+
+#include <QTimer>
 #include <QWidget>
 
 class Game;
 class Player;
 
+// trieda widgetu pre zobrazenie hracej plochy
 class PlayBoard : public QWidget {
     Q_OBJECT
 
@@ -57,6 +61,11 @@ class PlayBoard : public QWidget {
             return m_clickEnabled;
         };
 
+        // zisti ci je plocha spustena
+        bool isRunning() const {
+            return m_isRunning;
+        };
+
     public slots:
         // povoli/zakaze klikanie
         void enableClick(bool v = true) {
@@ -65,6 +74,13 @@ class PlayBoard : public QWidget {
         void disableClick() {
             enableClick(false);
         };
+
+        // sputi/zastavi plochu
+        void startBoard();
+        void stopBoard();
+
+        // prekresli stvorcek (urceny suradnicami v poli) na ploche
+        void repaint(int, int);
 
     signals:
         // signal je emitnuty, ked bola mys uvolnena
@@ -78,12 +94,15 @@ class PlayBoard : public QWidget {
         // urcuje ci sa maju posielat udalosti o kliknutiach
         bool m_clickEnabled;
 
+        // urcuje ci hra bezi
+        bool m_isRunning;
+
         // urcuje velkost vykreslovaneho stvoreceka
         int m_sideSize;
 
         // urcuje kde sa (ralativne k widgetu) zacina
         // vykreslovat hracia plocha
-        int m_fromRight;
+        int m_fromLeft;
         int m_fromTop;
 };
 

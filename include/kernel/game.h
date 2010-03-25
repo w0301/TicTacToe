@@ -16,6 +16,8 @@
 
 #include "main.h"
 
+#include <QList>
+#include <QPoint>
 #include <QObject>
 #include <QVector>
 
@@ -27,6 +29,51 @@ class Game : public QObject {
     Q_OBJECT
 
     public:
+        class Square {
+            public:
+                Square() : m_player(NULL), m_isWinning(false) { };
+                Square(Player *pl) : m_player(pl), m_isWinning(false) { };
+                Square(const Square& from) : m_player(from.m_player), m_isWinning(false) { };
+
+                Square& operator= (Player *pl) {
+                    m_player = pl;
+                    return *this;
+                };
+                Square& operator= (const Square& from) {
+                    if(this != &from) {
+                        m_player = from.m_player;
+                        m_isWinning = from.m_isWinning;
+                    }
+                    return *this;
+                };
+
+                // implicitna konverzia na typ Player
+                operator Player* () {
+                    return m_player;
+                };
+                operator const Player* () const {
+                    return m_player;
+                };
+
+                Player *operator-> () {
+                    return m_player;
+                };
+                const Player *operator-> () const {
+                    return m_player;
+                };
+
+                // zisti ci je stvorec vyherny a pod.
+                bool isWinning() const {
+                    return m_isWinning;
+                };
+                void setWinning(bool v = true) {
+                    m_isWinning = v;
+                };
+
+            private:
+                Player *m_player;
+                bool m_isWinning;
+        };
         // konstrutkory
         Game(QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
         Game(QVector<Player*>, QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
@@ -50,13 +97,16 @@ class Game : public QObject {
         void setPlayers(QVector<Player*>);
 
         // vrati vektor plochy a vrati a nastavi jeho velkost
-        QVector< QVector<Player*> >& squareBoard() {
+        QVector< QVector<Square> >& squareBoard() {
             return m_squareBoard;
         };
-        const QVector< QVector<Player*> >& squareBoard() const {
+        const QVector< QVector<Square> >& squareBoard() const {
             return m_squareBoard;
         };
-        Player *square(int x, int y) const {
+        Square& square(int x, int y) {
+            return m_squareBoard[y][x];
+        };
+        const Square& square(int x, int y) const {
             return m_squareBoard[y][x];
         };
         int squareBoardSize() const {
@@ -74,7 +124,7 @@ class Game : public QObject {
 
     public slots:
         void fillSquare(int, int, Player*);
-        void testWinner(int, int, Player*) const;
+        void testWinner(int, int, Player*);
         void processActualPlayer(int, int);
         void resetGame();
 
@@ -83,7 +133,7 @@ class Game : public QObject {
         // ako parametre posle index zmeneneho stvorceka
         // [-1, -1] signalizuje zmenu celej plochy, parameter Player
         // je pouzity iba pri odosielani objektom hracov
-        void squareBoardUpdated(int = -1, int = -1, Player* = NULL);
+        void squareBoardUpdated(int = WHOLE, int = WHOLE, Player* = NULL);
 
         // signal je zavolany, ked nastane sutuacia zmenenia hraca
         // ako parameter posiele ukazatel na noveho hraca
@@ -91,7 +141,8 @@ class Game : public QObject {
 
         // signal je poslany, ked nejaky hrac vyhra hru
         // ako parameter posiela ukazatel na tohoto hraca
-        void playerWon(Player*) const;
+        // a suradnice prveho a posledneho vytazneho kamena (v poli)
+        void playerWon(Player*);
 
         // signali su poslane na zaciatku/konci slotu processPlayer()
         // posielanie zabezpecuje to aby nedochadzalo k spracovaniu kliknuti
@@ -107,7 +158,7 @@ class Game : public QObject {
         int m_actualPlayerIndex;
 
         // uchovava info o jednotlivich stvorcekoch
-        QVector< QVector<Player*> > m_squareBoard;
+        QVector< QVector<Square> > m_squareBoard;
 
         // uchovava dlzku resp. vysku plochy v stvorcekoch
         int m_squareCount;

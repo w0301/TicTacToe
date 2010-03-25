@@ -92,107 +92,158 @@ void Game::fillSquare(int x, int y, Player *pl) {
 }
 
 // slot otestuje ci predany hrac pl nevyhral tahom na [x, y]
-void Game::testWinner(int x, int y, Player *pl) const {
+void Game::testWinner(int x, int y, Player *pl) {
     // uchovava kolko je stvorcekov za sebou
-    int goodSquares = 1;
+    int goodSquares = 1, nx = 0, ny = 0;
     bool dir1 = true, dir2 = true;
+    QPoint startP, endP;
+    startP = endP = QPoint(x, y);
 
     // smer vodorovne
-    for(int i = 1; goodSquares != winStonesCount(); i++) {
-        if(dir1 && x - i >= 0 && square(x - i, y) == pl) {
-            goodSquares++;
+    if(goodSquares != winStonesCount()) {
+        for(int i = 1; goodSquares != winStonesCount(); i++) {
+            nx = x - i;
+            if(dir1 && nx >= 0 && square(nx, y) == pl) {
+                goodSquares++;
+                startP = QPoint(nx, y);
+            }
+            else {
+                dir1 = false;
+            }
+
+            nx = x + i;
+            if(dir2 && nx < squareBoardSize() && square(nx, y) == pl) {
+                goodSquares++;
+                endP = QPoint(nx, y);
+            }
+            else {
+                dir2 = false;
+            }
+            if(!dir1 && !dir2) {
+                break;
+            }
         }
-        else {
-            dir1 = false;
-        }
-        if(dir2 && x + i < squareBoardSize() && square(x + i, y) == pl) {
-            goodSquares++;
-        }
-        else {
-            dir2 = false;
-        }
-        if(!dir1 && !dir2) {
-            break;
-        }
-    }
-    if(goodSquares == winStonesCount()) {
-        emit playerWon(pl);
-        return;
     }
 
     // smer vertikalne
-    goodSquares = 1;
-    dir1 = dir2 = true;
-    for(int i = 1; goodSquares != winStonesCount(); i++) {
-        if(dir1 && y - i >= 0 && square(x, y - i) == pl) {
-            goodSquares++;
+    if(goodSquares != winStonesCount()) {
+        goodSquares = 1;
+        dir1 = dir2 = true;
+        startP = endP = QPoint(x, y);
+        for(int i = 1; goodSquares != winStonesCount(); i++) {
+            ny = y - i;
+            if(dir1 && ny >= 0 && square(x, ny) == pl) {
+                goodSquares++;
+                startP = QPoint(x, ny);
+            }
+            else {
+                dir1 = false;
+            }
+
+            ny = y + i;
+            if(dir2 && ny < squareBoardSize() && square(x, ny) == pl) {
+                goodSquares++;
+                endP = QPoint(x, ny);
+            }
+            else {
+                dir2 = false;
+            }
+            if(!dir1 && !dir2) {
+                break;
+            }
         }
-        else {
-            dir1 = false;
-        }
-        if(dir2 && y + i < squareBoardSize() && square(x, y + i) == pl) {
-            goodSquares++;
-        }
-        else {
-            dir2 = false;
-        }
-        if(!dir1 && !dir2) {
-            break;
-        }
-    }
-    if(goodSquares == winStonesCount()) {
-        emit playerWon(pl);
-        return;
     }
 
     // smer sikmo - zlava doprava
-    goodSquares = 1;
-    dir1 = dir2 = true;
-    for(int i = 1; goodSquares != winStonesCount(); i++) {
-        if(dir1 && y - i >= 0 && x - i >= 0 && square(x - i, y - i) == pl) {
-            goodSquares++;
+    if(goodSquares != winStonesCount()) {
+        goodSquares = 1;
+        dir1 = dir2 = true;
+        startP = endP = QPoint(x, y);
+        for(int i = 1; goodSquares != winStonesCount(); i++) {
+            ny = y - i;
+            nx = x - i;
+            if(dir1 && ny >= 0 && nx >= 0 && square(nx, ny) == pl) {
+                goodSquares++;
+                startP = QPoint(nx, ny);
+            }
+            else {
+                dir1 = false;
+            }
+
+            ny = y + i;
+            nx = x + i;
+            if(dir2 && ny < squareBoardSize() && nx < squareBoardSize() && square(nx, ny) == pl) {
+                goodSquares++;
+                endP = QPoint(nx, ny);
+            }
+            else {
+                dir2 = false;
+            }
+            if(!dir1 && !dir2) {
+                break;
+            }
         }
-        else {
-            dir1 = false;
-        }
-        if(dir2 && y + i < squareBoardSize() && x + i < squareBoardSize() && square(x + i, y + i) == pl) {
-            goodSquares++;
-        }
-        else {
-            dir2 = false;
-        }
-        if(!dir1 && !dir2) {
-            break;
-        }
-    }
-    if(goodSquares == winStonesCount()) {
-        emit playerWon(pl);
-        return;
     }
 
     // smer sikmo - zprava dolava
-    goodSquares = 1;
-    dir1 = dir2 = true;
-    for(int i = 1; goodSquares != winStonesCount(); i++) {
-        if(dir1 && y - i >= 0 && x + i < squareBoardSize() && square(x + i, y - i) == pl) {
-            goodSquares++;
-        }
-        else {
-            dir1 = false;
-        }
-        if(dir2 && y + i < squareBoardSize() && x - i >= 0 && square(x - i, y + i) == pl) {
-            goodSquares++;
-        }
-        else {
-            dir2 = false;
-        }
-        if(!dir1 && !dir2) {
-            break;
+    if(goodSquares != winStonesCount()) {
+        goodSquares = 1;
+        dir1 = dir2 = true;
+        startP = endP = QPoint(x, y);
+        for(int i = 1; goodSquares != winStonesCount(); i++) {
+            ny = y - i;
+            nx = x + i;
+            if(dir1 && ny >= 0 && nx < squareBoardSize() && square(nx, ny) == pl) {
+                goodSquares++;
+                startP = QPoint(nx, ny);
+            }
+            else {
+                dir1 = false;
+            }
+
+            ny = y + i;
+            nx = x - i;
+            if(dir2 && ny < squareBoardSize() && nx >= 0 && square(nx, ny) == pl) {
+                goodSquares++;
+                endP = QPoint(nx, ny);
+            }
+            else {
+                dir2 = false;
+            }
+            if(!dir1 && !dir2) {
+                break;
+            }
         }
     }
+
+    // ked sme nasli vytaza posleme signal
     if(goodSquares == winStonesCount()) {
+        if(startP.x() == endP.x()) {
+            // vertykalny smer
+            for(int i = 0; i != winStonesCount(); i++) {
+                square(startP.x(), startP.y()+i).setWinning(true);
+            }
+        }
+        else if(startP.y() == endP.y()) {
+            // vodorovny smer
+            for(int i = 0; i != winStonesCount(); i++) {
+                square(startP.x()+i, startP.y()).setWinning(true);
+            }
+        }
+        else if(startP.x() < endP.x()) {
+            // z praveho horneho do laveho dolneho
+            for(int i = 0; i != winStonesCount(); i++) {
+                square(startP.x()+i, startP.y()+i).setWinning(true);
+            }
+        }
+        else if(startP.x() > endP.x()) {
+            // z laveho horneho do praveho dolneho
+            for(int i = 0; i != winStonesCount(); i++) {
+                square(startP.x()-i, startP.y()+i).setWinning(true);
+            }
+        }
+        emit squareBoardUpdated();
         emit playerWon(pl);
-        return;
     }
 }
 
@@ -224,11 +275,12 @@ void Game::processActualPlayer(int arrX, int arrY) {
     emit playerProcessEnded();
 }
 
+// vycisti pole kamenov a posle signal o update hry
 void Game::resetGame() {
     m_squareBoard.clear();
     setSquareBoardSize(squareBoardSize());
     setActualPlayerIndex(0);
 
     // dame vediet ze doslo k zmene celej plochy
-    emit squareBoardUpdated();
+    emit squareBoardUpdated(CLEAR, CLEAR);
 }
