@@ -24,11 +24,17 @@ PlayBoard::PlayBoard(QWidget *parent, Game *game) :
         QWidget(parent), m_game(NULL), m_clickEnabled(false), m_sideSize(0), m_fromLeft(0), m_fromTop(0) {
     // plocha sa zatial neda pouzit => nemusime ju ukazovat
     hide();
-    setGame(game);
+    if(game != NULL) {
+        setGame(game);
+    }
 }
 
 // nastavenie hry, ktora pracuje nad plochou
 void PlayBoard::setGame(Game *game) {
+    if(game == NULL) {
+        unsetGame();
+    }
+
     m_game = game;
     if(m_game != NULL) {
         // ked hra zmeni backend plochu musime znova vykreslit
@@ -51,6 +57,21 @@ void PlayBoard::setGame(Game *game) {
         if(m_game->isRunning()) {
             startBoard();
         }
+    }
+}
+
+void PlayBoard::unsetGame() {
+    if(m_game != NULL) {
+        disconnect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(repaint(int, int)));
+        disconnect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processActualPlayer(int, int)));
+        disconnect(m_game, SIGNAL(playerProcessStarted()), this, SLOT(disableClick()));
+        disconnect(m_game, SIGNAL(playerProcessEnded()), this, SLOT(enableClick()));
+        disconnect(m_game, SIGNAL(playerWon(Player*)), this, SLOT(stopBoard()));
+        disconnect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(startBoard()));
+        disconnect(m_game, SIGNAL(gameStopped()), this, SLOT(stopBoard()));
+
+        stopBoard();
+        m_game = NULL;
     }
 }
 

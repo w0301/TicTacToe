@@ -29,7 +29,7 @@ class PlayBoard : public QWidget {
     public:
         // vytvori hraciu plochu s rodicom a Game objektom,
         // ktory na nej pracuje
-        PlayBoard(QWidget*, Game*);
+        PlayBoard(QWidget*, Game* = NULL);
 
         // mozno budu derivati, kt. budu upravovat vzhlad
         virtual ~PlayBoard() { };
@@ -54,7 +54,6 @@ class PlayBoard : public QWidget {
         const Game *game() const {
             return m_game;
         };
-        void setGame(Game*);
 
         // zisti ci sa moze klikat
         bool isClickEnabled() const {
@@ -81,6 +80,10 @@ class PlayBoard : public QWidget {
 
         // prekresli stvorcek (urceny suradnicami v poli) na ploche
         void repaint(int, int);
+
+        // nastavenie hry
+        void setGame(Game*);
+        void unsetGame();
 
     signals:
         // signal je emitnuty, ked bola mys uvolnena

@@ -340,12 +340,13 @@ void Game::pauseGame(bool val) {
     if(val) {
         emit playerProcessStarted();
         stopTimer();
-        emit gamePaused();
+        emit gamePaused(true);
     }
     else {
         // resetneme a nastavime uz uplinuli cas tahu
         resetTimer( m_actuTimeLimit );
         emit gameUnpaused();
+        emit gamePaused(false);
         emit playerProcessEnded();
     }
 }
@@ -375,11 +376,7 @@ void Game::resetGame() {
     m_squareBoard.clear();
     setSquareBoardSize(squareBoardSize());
     setActualPlayerIndex(0);
-    if(m_timeLimit != 0) {
-        killTimer(m_timerID);
-        m_lastTime.restart();
-        m_timerID = startTimer(500);
-    }
+    resetTimer();
 
     // dame vediet ze doslo k zmene celej plochy
     emit squareBoardUpdated(CLEAR, CLEAR);

@@ -14,12 +14,26 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QLCDNumber>
 #include <QMainWindow>
 
 class Game;
 class PlayBoard;
-class QLineEdit;
+class QCheckBox;
+class QDockWidget;
 
+class TimeLimitFrame : public QLCDNumber {
+    Q_OBJECT
+
+    public:
+        TimeLimitFrame(QWidget*, int = 0);
+
+    public slots:
+        // videli 1000 a zobrazi ako des. cislo
+        void showTimeLimit(int);
+};
+
+// MainWindow class
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -28,13 +42,25 @@ class MainWindow : public QMainWindow {
         ~MainWindow();
 
     public slots:
-        void updateTime(int);
+        void setGame(Game*);
+        void unsetGame();
 
     private:
+        // hra pre okno
         Game *m_game;
+
+        /// widgety
+        // hracia plocha pre hru
         PlayBoard *m_playBoard;
 
-        QLineEdit *edit;
+        // zobrazovac casoveho limitu
+        TimeLimitFrame *m_timeLimitFrame;
+
+        // checkbox na pauzu
+        QCheckBox *m_pauseCheckBox;
+
+        // docky okna - zatial jeden mozno bude aj druhy
+        QDockWidget *m_leftDock;
 };
 
 #endif // MAINWINDOW_H

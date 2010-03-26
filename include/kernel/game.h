@@ -175,7 +175,7 @@ class Game : public QObject {
         void gameStopped();
 
         // posle sa ked bola hra pauznuta/odpauznuta
-        void gamePaused();
+        void gamePaused(bool = true);
         void gameUnpaused();
 
         // signal je poslany, ked nejaky hrac vyhra hru

@@ -19,45 +19,62 @@
 
 #include <QtGui>
 
-MainWindow::MainWindow() : QMainWindow(NULL) {
-    // nastavenie defaultnych hodnot
+// TimeLimitFrame class
+TimeLimitFrame::TimeLimitFrame(QWidget *parent, int num) : QLCDNumber(parent) {
+    display(num);
+}
+
+void TimeLimitFrame::showTimeLimit(int num) {
+    display( double(num) / 1000.0 );
+}
+
+// MainWindow class
+MainWindow::MainWindow() :
+        QMainWindow(NULL), m_game(NULL), m_playBoard(NULL), m_timeLimitFrame(NULL),
+        m_leftDock(NULL) {
+    /// nastavenie defaultnych hodnot
     setWindowTitle( tr("TicTacToe") );
-    setMinimumSize(405, 405);
+    setMinimumSize(505, 405);
+
+    /// vytvorenie hracej plochy
+    m_playBoard = new PlayBoard(this);
+    setCentralWidget(m_playBoard);
+
+    /// vytvorenie laveho docku
+    m_leftDock = new QDockWidget(this);
+    m_leftDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    m_leftDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+
+    // pomocny widget a layout
+    QWidget *leftDockWidgets = new QWidget(m_leftDock);
+    QVBoxLayout *leftDockLayout = new QVBoxLayout(leftDockWidgets);
+
+    // vytvorenie zobrazovaca casu
+    m_timeLimitFrame = new TimeLimitFrame(this, 0);
+
+    // vytvorenie check boxu na pauzu
+    m_pauseCheckBox = new QCheckBox(tr("&Pause"), leftDockWidgets);
+
+    // pridanie do layoutu
+    leftDockLayout->addWidget(m_timeLimitFrame);
+    leftDockLayout->addStretch(1);
+    leftDockLayout->addWidget(m_pauseCheckBox);
+
+    // nastavenie widgetu dockovacieho widgetu
+    m_leftDock->setWidget(leftDockWidgets);
+
+    // priradenie docku oknu
+    addDockWidget(Qt::LeftDockWidgetArea, m_leftDock);
+
 
     // vytvorenie novej hry a priradenie centralneho
     // widgetu v konstruktore
-    m_game = new Game(this, DEFAULT_BOARD_SIZE, 5000, DEFAULT_WIN_STONES);
-
-    // vytvorenie plochy
-    m_playBoard = new PlayBoard(this, m_game);
-    setCentralWidget(m_playBoard);
+    setGame( new Game(this, DEFAULT_BOARD_SIZE, 30000, DEFAULT_WIN_STONES) );
 
     // pridanie hracov a spustenie hry
     QVector<Player*> plVec;
     plVec.push_back(new Player(NULL, new CirclePlayerSign(Qt::red)));
     plVec.push_back(new Player(NULL, new CrossPlayerSign(Qt::blue)));
-
-    QDockWidget *dockWidget = new QDockWidget(tr("Dock Widget"), this);
-    dockWidget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
-    QWidget *dock = new QWidget(dockWidget);
-    QGridLayout *layout = new QGridLayout(dock);
-
-    edit = new QLineEdit(dock);
-    layout->addWidget(edit, 0, 0);
-    connect(m_game, SIGNAL(timerUpdated(int)), this, SLOT(updateTime(int)));
-
-    QCheckBox *push = new QCheckBox(tr("Pause"), dock);
-    layout->addWidget(push, 1, 0);
-    connect(push, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
-
-    dockWidget->setWidget(dock);
-    addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
-
-    QDockWidget *dockWidget2 = new QDockWidget(tr("Dock Widget2"), this);
-    dockWidget2->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, dockWidget2);
-
     m_game->startGame(plVec);
 }
 
@@ -65,7 +82,39 @@ MainWindow::~MainWindow() {
 
 }
 
-void MainWindow::updateTime(int val) {
-    edit->setText( QString("%1").arg( float(val) / 1000.0 ) );
+// nastavi hru okna a pripoji k oknu potrebne signaly a zobrazi
+// potrebne okna
+void MainWindow::setGame(Game *game) {
+    unsetGame();
+    m_game = game;
+    if(m_game != NULL) {
+        /// v prvom rade nastavenie hry hracej plochy
+        m_playBoard->setGame(m_game);
+
+        /// dalej pripojenie signalov
+        // signal pre update casoveho limitu
+        connect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
+
+        // signali pre check box pauzi na docku
+        connect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
+        connect(m_game, SIGNAL(gamePaused(bool)), m_pauseCheckBox, SLOT(setChecked(bool)));
+    }
+}
+
+// zrusi aktulnu hru v okne
+void MainWindow::unsetGame() {
+    if(m_game != NULL) {
+        /// odstavenie hry hracej plochy
+        m_playBoard->unsetGame();
+
+        // odpojenie signalov
+        disconnect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
+        disconnect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
+        disconnect(m_game, SIGNAL(gamePaused()), m_pauseCheckBox, SLOT(click()));
+
+        // a nakoniec zmazanie samotnej hry
+        delete m_game;
+        m_game = NULL;
+    }
 }
 
