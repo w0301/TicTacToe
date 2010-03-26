@@ -17,6 +17,7 @@
 #include "main.h"
 
 #include <QList>
+#include <QTime>
 #include <QPoint>
 #include <QObject>
 #include <QVector>
@@ -127,6 +128,14 @@ class Game : public QObject {
             return m_isRunning;
         };
 
+        // je hra pozastavena?
+        bool isPaused() const {
+            return m_isPaused;
+        };
+
+        // event handlery
+        void timerEvent(QTimerEvent*);
+
     public slots:
         void fillSquare(int, int, Player*);
         void testWinner(int, int, Player*);
@@ -135,8 +144,16 @@ class Game : public QObject {
         // spustanie hry a pod
         void startGame(const QVector<Player*>&);
         void startGame();
+        void pauseGame(bool = true);
+        void unpauseGame() {
+            pauseGame(false);
+        };
         void stopGame();
         void resetGame();
+
+        // sprava timeru
+        void resetTimer(int = -1);
+        void stopTimer();
 
     signals:
         // posle signal o tom, ze doslo k zmene na hracej ploche
@@ -157,6 +174,10 @@ class Game : public QObject {
         // stopGame
         void gameStopped();
 
+        // posle sa ked bola hra pauznuta/odpauznuta
+        void gamePaused();
+        void gameUnpaused();
+
         // signal je poslany, ked nejaky hrac vyhra hru
         // ako parameter posiela ukazatel na tohoto hraca
         // a suradnice prveho a posledneho vytazneho kamena (v poli)
@@ -167,6 +188,10 @@ class Game : public QObject {
         // ktore nemaju vyznam lebo je na rade iny, halvne sietovy hrac
         void playerProcessStarted();
         void playerProcessEnded();
+
+        // signal je poslany, ked je znizeny time limit
+        // a posiela novy time limit
+        void timerUpdated(int);
 
     private:        
         // uchovava vsetkych hracov hry
@@ -181,11 +206,23 @@ class Game : public QObject {
         // je hra spustena?
         bool m_isRunning;
 
+        // je hra pauznuta
+        bool m_isPaused;
+
         // uchovava dlzku resp. vysku plochy v stvorcekoch
         int m_squareCount;
 
-        // uchovava time limit pre tah
+        // uchovava time limit pre tah - v milisekundach
         int m_timeLimit;
+
+        // uchovava aktualny cas, kt. zostava na tah
+        int m_actuTimeLimit;
+
+        // ID timera, kt. pocita time limit
+        int m_timerID;
+
+        // cas, ktory bol pri zacati kola
+        QTime m_lastTime;
 
         // uchovava cislo, kt. urcuje kolko kamenov, podpisov musi
         // byt v rade na vytazstvo

@@ -21,7 +21,8 @@
 // vytvori objekt a spusti hru
 Game::Game(QVector<Player*> players, QObject *parent, int size, int time, int toWin) :
         QObject(parent), m_players(), m_actualPlayerIndex(0), m_squareBoard(),
-        m_isRunning(false), m_squareCount(size), m_timeLimit(time), m_toWin(toWin) {
+        m_isRunning(false), m_isPaused(false), m_squareCount(size), m_timeLimit(time),
+        m_actuTimeLimit(time), m_timerID(-1), m_toWin(toWin) {
     setSquareBoardSize(m_squareCount);
     startGame(players);
 }
@@ -29,7 +30,8 @@ Game::Game(QVector<Player*> players, QObject *parent, int size, int time, int to
 // iba vytvori objekt, hru nespusta
 Game::Game(QObject *parent, int size, int time, int toWin) :
         QObject(parent), m_players(), m_actualPlayerIndex(0), m_squareBoard(),
-        m_isRunning(false), m_squareCount(size), m_timeLimit(time), m_toWin(toWin) {
+        m_isRunning(false), m_isPaused(false), m_squareCount(size), m_timeLimit(time),
+        m_actuTimeLimit(time), m_timerID(-1), m_toWin(toWin) {
     setSquareBoardSize(m_squareCount);
 }
 
@@ -57,7 +59,7 @@ void Game::setPlayers(QVector<Player*> players) {
         connect(i, SIGNAL(moving(int, int, Player*)), this, SLOT(fillSquare(int, int, Player*)));
 
         // po kazdom tahu zistime ci nebol tah vytazny
-        connect(i, SIGNAL(moving(int, int, Player*)), this, SLOT(testWinner(int,int,Player*)));
+        connect(i, SIGNAL(moving(int, int, Player*)), this, SLOT(testWinner(int, int, Player*)));
 
         // musime dat vediet hracovi ze sa zmenila plocha - mozno to bude chciet poslat cez siet domov
         connect(this, SIGNAL(squareBoardUpdated(int, int, Player*)), i, SLOT(updateBoard(int, int, Player*)));
@@ -87,7 +89,7 @@ Player *Game::actualPlayer() const {
 };
 
 // slot zapise na poziciu [x, y] hraca pl, samozrejme
-// pokial tam nieje uz iny hrac - moze byt volane iba cez signal
+// pokial tam nieje uz iny hrac
 void Game::fillSquare(int x, int y, Player *pl) {
     if(m_squareBoard[y][x] == NULL) {
         m_squareBoard[y][x] = pl;
@@ -282,6 +284,35 @@ void Game::processActualPlayer(int arrX, int arrY) {
     emit playerProcessEnded();
 }
 
+// resetne timer na time limit hry
+void Game::resetTimer(int l) {
+    if(m_timeLimit != 0) {
+        if(l == -1) {
+            m_actuTimeLimit = m_timeLimit;
+        }
+        else {
+            m_actuTimeLimit = l;
+        }
+        timerUpdated(m_actuTimeLimit);
+        m_lastTime.start();
+        if(m_timerID == -1) {
+            m_timerID = startTimer(500);
+            connect(this, SIGNAL(playerWon(Player*)), this, SLOT(stopTimer()));
+            connect(this, SIGNAL(playerChanged(Player*)), this, SLOT(resetTimer()));
+        }
+    }
+}
+
+// zastavi timer
+void Game::stopTimer() {
+    if(m_timerID != -1) {
+        killTimer(m_timerID);
+        disconnect(this, SIGNAL(playerWon(Player*)), this, SLOT(stopTimer()));
+        disconnect(this, SIGNAL(playerChanged(Player*)), this, SLOT(resetTimer()));
+        m_timerID = -1;
+    }
+}
+
 // spusti hru, ktora uz ma hracov
 void Game::startGame() {
     if(isRunning()) {
@@ -289,6 +320,8 @@ void Game::startGame() {
     }
     setActualPlayerIndex(0);
     m_isRunning = true;
+    resetTimer();
+
     emit gameStarted(actualPlayer());
 }
 
@@ -301,6 +334,22 @@ void Game::startGame(const QVector<Player*>& players) {
     startGame();
 }
 
+// pozastavi hru
+void Game::pauseGame(bool val) {
+    m_isPaused = val;
+    if(val) {
+        emit playerProcessStarted();
+        stopTimer();
+        emit gamePaused();
+    }
+    else {
+        // resetneme a nastavime uz uplinuli cas tahu
+        resetTimer( m_actuTimeLimit );
+        emit gameUnpaused();
+        emit playerProcessEnded();
+    }
+}
+
 // zastavi hru - vycisti plochu, vycisti pole hracov
 // a nastavi premennu m_isRunning
 void Game::stopGame() {
@@ -309,6 +358,8 @@ void Game::stopGame() {
     m_players.clear();
     setActualPlayerIndex(0);
     m_isRunning = false;
+
+    stopTimer();
 
     // posleme signaly
     emit gameStopped();
@@ -324,7 +375,27 @@ void Game::resetGame() {
     m_squareBoard.clear();
     setSquareBoardSize(squareBoardSize());
     setActualPlayerIndex(0);
+    if(m_timeLimit != 0) {
+        killTimer(m_timerID);
+        m_lastTime.restart();
+        m_timerID = startTimer(500);
+    }
 
     // dame vediet ze doslo k zmene celej plochy
     emit squareBoardUpdated(CLEAR, CLEAR);
+}
+
+// event handler timeru
+void Game::timerEvent(QTimerEvent*) {
+    if(!isRunning() || isPaused()) {
+        return;
+    }
+    if(m_actuTimeLimit <= 0) {
+        incActualPlayer();
+    }
+    else if(m_lastTime.elapsed() >= 1000) {
+        m_actuTimeLimit -= 1000;
+        timerUpdated(m_actuTimeLimit);
+        m_lastTime.restart();
+    }
 }

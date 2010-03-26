@@ -18,6 +18,7 @@
 
 class Game;
 class PlayBoard;
+class QLineEdit;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -26,9 +27,14 @@ class MainWindow : public QMainWindow {
         MainWindow();
         ~MainWindow();
 
+    public slots:
+        void updateTime(int);
+
     private:
         Game *m_game;
         PlayBoard *m_playBoard;
+
+        QLineEdit *edit;
 };
 
 #endif // MAINWINDOW_H
