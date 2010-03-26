@@ -103,8 +103,8 @@ int Player::sm_idGenerator = 1;
 
 // konstruktor automaticky vygeneruje ID hraca
 // no nastavenie triedy, ktora vykresli podpis prebehne rucne
-Player::Player(QObject *parent, PlayerSign *sign) :
-        QObject(parent), m_id(sm_idGenerator++), m_sign(sign) {
+Player::Player(QObject *parent, PlayerSign *sign, QString name) :
+        QObject(parent), m_id(sm_idGenerator++), m_sign(sign), m_name(name) {
 
 }
 

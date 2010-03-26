@@ -19,6 +19,7 @@
 #include <QColor>
 #include <QPixmap>
 #include <QObject>
+#include <QString>
 
 class QWidget;
 
@@ -87,7 +88,7 @@ class Player : public QObject {
     Q_OBJECT
 
     public:
-        Player(QObject*, PlayerSign*);
+        Player(QObject*, PlayerSign*, QString = QString(""));
         virtual ~Player();
 
         // klasicke pristupove funkcie
@@ -96,6 +97,17 @@ class Player : public QObject {
         };
         PlayerSign *sign() const {
             return m_sign;
+        };
+
+        // vratenie/nastavenie mena
+        QString& name() {
+            return m_name;
+        };
+        const QString& name() const {
+            return m_name;
+        };
+        void setName(const QString& name) {
+            m_name = name;
         };
 
         // vrati true, ked je hrac ovladany pocitacom
@@ -132,6 +144,9 @@ class Player : public QObject {
 
         // trieda, ktora kresli hraca na plochu
         PlayerSign *m_sign;
+
+        // meno hraca
+        QString m_name;
 };
 
 #endif // PLAYER_H
