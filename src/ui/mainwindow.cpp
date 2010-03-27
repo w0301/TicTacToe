@@ -28,6 +28,70 @@ void TimeLimitFrame::showTimeLimit(int num) {
     display( double(num) / 1000.0 );
 }
 
+void TimeLimitFrame::resetTimeLimit() {
+    display(0);
+}
+
+// PlayerListFrame class
+PlayerListFrame::PlayerListFrame(QWidget *parent) :
+        QFrame(parent), m_game(NULL), m_actuPlayerName(NULL), m_playerList(NULL) {
+    // widgety usporiadame do layoutu
+    QVBoxLayout *layout = new QVBoxLayout(this);
+
+    // pridanie widgetu s menom
+    m_actuPlayerName = new QLabel(this);
+
+    // pridanie widgetu listu hracov
+    m_playerList = new QListWidget(this);
+
+    // pridanie do layoutu
+    layout->addWidget(m_actuPlayerName);
+    layout->addWidget(m_playerList);
+}
+
+// naplni list menami hracov
+void PlayerListFrame::fillList() {
+    if(m_game == NULL) {
+        return;
+    }
+    foreach(Player *i, m_game->players()) {
+        m_playerList->addItem(i->name());
+    }
+}
+
+// nastavi label aktualneho hraca
+void PlayerListFrame::setActualPlayer(Player *pl) {
+    m_actuPlayerName->setText(pl->name());
+}
+
+// nastavi hru s ktorov bude widget pracovat
+void PlayerListFrame::setGame(Game *game) {
+    unsetGame();
+    m_game = game;
+    if(m_game != NULL) {
+        // pri zacati hry sa naplni list
+        connect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(fillList()));
+
+        // ked sa zmeni hrac nastavime label
+        connect(m_game, SIGNAL(playerChanged(Player*)), this, SLOT(setActualPlayer(Player*)));
+
+        // ked sa hra skonci musime vicistit list a label
+        connect(m_game, SIGNAL(gameStopped()), m_playerList, SLOT(clear()));
+        connect(m_game, SIGNAL(gameStopped()), m_actuPlayerName, SLOT(clear()));
+    }
+}
+
+void PlayerListFrame::unsetGame() {
+    if(m_game != NULL) {
+        disconnect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(fillList()));
+        disconnect(m_game, SIGNAL(playerChanged(Player*)), this, SLOT(setActualPlayer(Player*)));
+        disconnect(m_game, SIGNAL(gameStopped()), m_playerList, SLOT(clear()));
+        disconnect(m_game, SIGNAL(gameStopped()), m_actuPlayerName, SLOT(clear()));
+
+        m_game = NULL;
+    }
+}
+
 // MainWindow class
 MainWindow::MainWindow() :
         QMainWindow(NULL), m_game(NULL), m_playBoard(NULL), m_timeLimitFrame(NULL),
@@ -52,12 +116,15 @@ MainWindow::MainWindow() :
     // vytvorenie zobrazovaca casu
     m_timeLimitFrame = new TimeLimitFrame(this, 0);
 
+    // vytvorenie listu hracov
+    m_playerListFrame = new PlayerListFrame(this);
+
     // vytvorenie check boxu na pauzu
     m_pauseCheckBox = new QCheckBox(tr("&Pause"), leftDockWidgets);
 
     // pridanie do layoutu
     leftDockLayout->addWidget(m_timeLimitFrame);
-    leftDockLayout->addStretch(1);
+    leftDockLayout->addWidget(m_playerListFrame);
     leftDockLayout->addWidget(m_pauseCheckBox);
 
     // nastavenie widgetu dockovacieho widgetu
@@ -73,8 +140,8 @@ MainWindow::MainWindow() :
 
     // pridanie hracov a spustenie hry
     QVector<Player*> plVec;
-    plVec.push_back(new Player(NULL, new CirclePlayerSign(Qt::red)));
-    plVec.push_back(new Player(NULL, new CrossPlayerSign(Qt::blue)));
+    plVec.push_back(new Player(NULL, new CirclePlayerSign(Qt::red), "Wizard"));
+    plVec.push_back(new Player(NULL, new CrossPlayerSign(Qt::blue), "Arcan"));
     m_game->startGame(plVec);
 }
 
@@ -91,8 +158,13 @@ void MainWindow::setGame(Game *game) {
         /// v prvom rade nastavenie hry hracej plochy
         m_playBoard->setGame(m_game);
 
+        /// potom nastavenie hry zobrazovaca hracov
+        m_playerListFrame->setGame(m_game);
+
         /// dalej pripojenie signalov
         // signal pre update casoveho limitu
+        connect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
+        connect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
         connect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
 
         // signali pre check box pauzi na docku
@@ -104,10 +176,13 @@ void MainWindow::setGame(Game *game) {
 // zrusi aktulnu hru v okne
 void MainWindow::unsetGame() {
     if(m_game != NULL) {
-        /// odstavenie hry hracej plochy
+        /// odstranenie hry dalsich objektov
         m_playBoard->unsetGame();
+        m_playerListFrame->unsetGame();
 
         // odpojenie signalov
+        disconnect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
+        disconnect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
         disconnect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
         disconnect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
         disconnect(m_game, SIGNAL(gamePaused()), m_pauseCheckBox, SLOT(click()));

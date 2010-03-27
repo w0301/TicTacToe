@@ -323,6 +323,7 @@ void Game::startGame() {
     resetTimer();
 
     emit gameStarted(actualPlayer());
+    emit playerChanged(actualPlayer());
 }
 
 // spusti hru s predanymi hracmi

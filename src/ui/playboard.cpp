@@ -31,10 +31,7 @@ PlayBoard::PlayBoard(QWidget *parent, Game *game) :
 
 // nastavenie hry, ktora pracuje nad plochou
 void PlayBoard::setGame(Game *game) {
-    if(game == NULL) {
-        unsetGame();
-    }
-
+    unsetGame();
     m_game = game;
     if(m_game != NULL) {
         // ked hra zmeni backend plochu musime znova vykreslit
