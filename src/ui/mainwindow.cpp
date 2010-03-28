@@ -164,8 +164,8 @@ void MainWindow::setGame(Game *game) {
 
         /// dalej pripojenie signalov
         // signal pre update casoveho limitu
-        connect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
-        connect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
+        connect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit()));
+        connect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit()));
         connect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
 
         // signali pre check box pauzi na docku
