@@ -21,9 +21,9 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    // nastavenie translatoru pre program
+    // nastavenie translatoru pre program - TODO: opravit tak aby to fungovala aj po instalacii na linux
     QTranslator translator;
-    translator.load( QString("tictactoe_") + QLocale::system().name() );
+    translator.load( QString("tictactoe_") + QLocale::system().name(), "../translations" );
     app.installTranslator(&translator);
 
     MainWindow window;
