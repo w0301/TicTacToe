@@ -31,7 +31,7 @@ class PlayerSign {
 
         // vrati pixmapu parametre - widget s ktoreho prekoporije pozadie,
         // bod s ktoreho zacne brat udaje z widgetu, velkost stvorceka widgetu
-        virtual QPixmap signPixmap(const QWidget*, QPoint, int) = 0;
+        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
 };
 
 // trieda pre rucne nakresene "podpisy hracov na ploche"
@@ -53,6 +53,8 @@ class PaintedPlayerSign : public PlayerSign {
         void setColor(const QColor& col) {
             m_color = col;
         };
+
+        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
 
     private:
         QColor m_color;

@@ -16,6 +16,15 @@
 
 #include <QPainter>
 
+//| PlayerSign class
+QPixmap PlayerSign::signPixmap(const QWidget* board, QPoint startAt, int size) {
+    QPixmap ret(size, size);
+    if(board != NULL) {
+        ret.fill(board, startAt);
+    }
+    return ret;
+}
+
 //| PaintedPlayerSign class
 PaintedPlayerSign::PaintedPlayerSign(const QColor& col) :
         m_color(col) {
@@ -32,6 +41,10 @@ PaintedPlayerSign& PaintedPlayerSign::operator= (const PaintedPlayerSign& from) 
         setColor( from.color() );
     }
     return *this;
+}
+
+QPixmap PaintedPlayerSign::signPixmap(const QWidget* board, QPoint startAt, int size) {
+    return PlayerSign::signPixmap(board, startAt, size);
 }
 
 //| CirclePlayerSign class
@@ -52,8 +65,7 @@ CirclePlayerSign& CirclePlayerSign::operator= (const CirclePlayerSign& from) {
 
 QPixmap CirclePlayerSign::signPixmap(const QWidget *board, QPoint startAt, int size) {
     // nastavenie kresliacej plochy
-    QPixmap ret(size, size);
-    ret.fill(board, startAt);
+    QPixmap ret = PaintedPlayerSign::signPixmap(board, startAt, size);
     QPainter painter(&ret);
     QPen newPen(color());
     newPen.setWidth(3);
@@ -83,8 +95,7 @@ CrossPlayerSign& CrossPlayerSign::operator= (const CrossPlayerSign& from) {
 
 QPixmap CrossPlayerSign::signPixmap(const QWidget *board, QPoint startAt, int size) {
     // nastavenie kresliacej plochy
-    QPixmap ret(size, size);
-    ret.fill(board, startAt);
+    QPixmap ret = PaintedPlayerSign::signPixmap(board, startAt, size);
     QPainter painter(&ret);
     QPen newPen(color());
     newPen.setWidth(3);

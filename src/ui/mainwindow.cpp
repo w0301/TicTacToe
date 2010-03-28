@@ -33,21 +33,50 @@ void TimeLimitFrame::resetTimeLimit() {
     display(0);
 }
 
+// PlayerSignFrame class
+PlayerSignFrame::PlayerSignFrame(QWidget *parent) :
+        QFrame(parent), m_actuPlayer(NULL) {
+    setMinimumSize(16, 16);
+    setMaximumSize(16, 16);
+    setToolTip(tr("Sign of player"));
+}
+
+// nastavi hraca, ktoreho podpis sa bude vykreslovat
+void PlayerSignFrame::setPlayer(Player *pl) {
+    m_actuPlayer = pl;
+    repaint();
+}
+
+// vykresli podpis hraca
+void PlayerSignFrame::paintEvent(QPaintEvent*) {
+    if(player() == NULL) {
+        return;
+    }
+    QPainter painter(this);
+    painter.drawPixmap(0, 0, player()->sign()->signPixmap(this, QPoint(0, 0), 16));
+}
+
 // PlayerListFrame class
 PlayerListFrame::PlayerListFrame(QWidget *parent) :
         QFrame(parent), m_game(NULL), m_actuPlayerName(NULL), m_playerList(NULL) {
-    // widgety usporiadame do layoutu
-    QVBoxLayout *layout = new QVBoxLayout(this);
-
     // pridanie widgetu s menom
     m_actuPlayerName = new QLabel(this);
+
+    // pridanie widgetu s podpisom
+    m_actuPlayerSign = new PlayerSignFrame(this);
 
     // pridanie widgetu listu hracov
     m_playerList = new QListWidget(this);
 
-    // pridanie do layoutu
-    layout->addWidget(m_actuPlayerName);
-    layout->addWidget(m_playerList);
+    // prve dve do horizontalneho layoutu
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    hLayout->addWidget(m_actuPlayerName);
+    hLayout->addWidget(m_actuPlayerSign);
+
+    // a potom do vertikalneho layoutu
+    QVBoxLayout *vLayout = new QVBoxLayout(this);
+    vLayout->addLayout(hLayout);
+    vLayout->addWidget(m_playerList);
 }
 
 // naplni list menami hracov
@@ -64,6 +93,7 @@ void PlayerListFrame::fillList() {
 void PlayerListFrame::setActualPlayer(Player *pl) {
     m_actuPlayerName->setText(pl->name());
     m_actuPlayerName->setToolTip(tr("Actually moving"));
+    m_actuPlayerSign->setPlayer(pl);
 }
 
 // nastavi hru s ktorov bude widget pracovat

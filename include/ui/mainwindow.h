@@ -42,6 +42,31 @@ class TimeLimitFrame : public QLCDNumber {
         void resetTimeLimit();
 };
 
+// PlayerSignFrame class
+class PlayerSignFrame : public QFrame {
+    Q_OBJECT
+
+    public:
+        PlayerSignFrame(QWidget*);
+
+        // reimplementacia paint eventu
+        void paintEvent(QPaintEvent*);
+
+        // vrati hraca
+        Player* player() {
+            return m_actuPlayer;
+        };
+        const Player* player() const {
+            return m_actuPlayer;
+        };
+
+    public slots:
+        void setPlayer(Player*);
+
+    private:
+        Player *m_actuPlayer;
+};
+
 // PlayerListFrame class
 class PlayerListFrame : public QFrame {
     Q_OBJECT
@@ -62,6 +87,9 @@ class PlayerListFrame : public QFrame {
 
         // zobrazuje meno aktualneho hraca
         QLabel *m_actuPlayerName;
+
+        // zobrazi podpis hraca
+        PlayerSignFrame *m_actuPlayerSign;
 
         // zobrazuje zoznam vsetkych hracov
         QListWidget *m_playerList;
