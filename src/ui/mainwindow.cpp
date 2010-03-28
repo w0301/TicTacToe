@@ -22,6 +22,7 @@
 // TimeLimitFrame class
 TimeLimitFrame::TimeLimitFrame(QWidget *parent, int num) : QLCDNumber(parent) {
     display(num);
+    setToolTip(tr("Time limit of move"));
 }
 
 void TimeLimitFrame::showTimeLimit(int num) {
@@ -62,6 +63,7 @@ void PlayerListFrame::fillList() {
 // nastavi label aktualneho hraca
 void PlayerListFrame::setActualPlayer(Player *pl) {
     m_actuPlayerName->setText(pl->name());
+    m_actuPlayerName->setToolTip(tr("Actually moving"));
 }
 
 // nastavi hru s ktorov bude widget pracovat
@@ -114,10 +116,10 @@ MainWindow::MainWindow() :
     QVBoxLayout *leftDockLayout = new QVBoxLayout(leftDockWidgets);
 
     // vytvorenie zobrazovaca casu
-    m_timeLimitFrame = new TimeLimitFrame(this, 0);
+    m_timeLimitFrame = new TimeLimitFrame(leftDockWidgets, 0);
 
     // vytvorenie listu hracov
-    m_playerListFrame = new PlayerListFrame(this);
+    m_playerListFrame = new PlayerListFrame(leftDockWidgets);
 
     // vytvorenie check boxu na pauzu
     m_pauseCheckBox = new QCheckBox(tr("&Pause"), leftDockWidgets);
@@ -132,7 +134,6 @@ MainWindow::MainWindow() :
 
     // priradenie docku oknu
     addDockWidget(Qt::LeftDockWidgetArea, m_leftDock);
-
 
     // vytvorenie novej hry a priradenie centralneho
     // widgetu v konstruktore
