@@ -67,6 +67,7 @@ PlayerListFrame::PlayerListFrame(QWidget *parent) :
 
     // pridanie widgetu listu hracov
     m_playerList = new QListWidget(this);
+    m_playerList->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
 
     // prve dve do horizontalneho layoutu
     QHBoxLayout *hLayout = new QHBoxLayout;
@@ -91,9 +92,13 @@ void PlayerListFrame::fillList() {
 
 // nastavi label aktualneho hraca
 void PlayerListFrame::setActualPlayer(Player *pl) {
-    m_actuPlayerName->setText(pl->name());
-    m_actuPlayerName->setToolTip(tr("Actually moving"));
-    m_actuPlayerSign->setPlayer(pl);
+    if(m_actuPlayerName != NULL) {
+        m_actuPlayerName->setText(pl->name());
+        m_actuPlayerName->setToolTip(tr("Actually moving"));
+    }
+    if(m_actuPlayerSign != NULL) {
+        m_actuPlayerSign->setPlayer(pl);
+    }
 }
 
 // nastavi hru s ktorov bude widget pracovat
@@ -186,6 +191,8 @@ void MainWindow::setGame(Game *game) {
     unsetGame();
     m_game = game;
     if(m_game != NULL) {
+        m_game->setParent(this);
+
         /// v prvom rade nastavenie hry hracej plochy
         m_playBoard->setGame(m_game);
 
