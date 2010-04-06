@@ -76,6 +76,7 @@ void PlayBoard::startBoard() {
     enableClick();
     m_isRunning = true;
     show();
+    repaint(WHOLE, WHOLE);
 }
 
 void PlayBoard::stopBoard() {

@@ -19,12 +19,12 @@
 #include <Qt>
 
 // vytvori objekt a spusti hru
-Game::Game(QVector<Player*> players, QObject *parent, int size, int time, int toWin) :
+Game::Game(const QVector<Player*>& players, QObject *parent, int size, int time, int toWin) :
         QObject(parent), m_players(), m_actualPlayerIndex(0), m_squareBoard(),
         m_isRunning(false), m_isPaused(false), m_squareCount(size), m_timeLimit(time),
         m_actuTimeLimit(time), m_timerID(-1), m_toWin(toWin) {
     setSquareBoardSize(m_squareCount);
-    startGame(players);
+    setPlayers(players);
 }
 
 // iba vytvori objekt, hru nespusta
@@ -45,7 +45,7 @@ void Game::setSquareBoardSize(int size) {
 }
 
 // nastaci novy vektor s hracmi - indikuje zaciatok hry
-void Game::setPlayers(QVector<Player*> players) {
+void Game::setPlayers(const QVector<Player*>& players) {
     if(players.size() < 2) {
         return;
     }

@@ -77,7 +77,7 @@ class Game : public QObject {
         };
         // konstrutkory
         Game(QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
-        Game(QVector<Player*>, QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
+        Game(const QVector<Player*>&, QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
 
         virtual ~Game() { };
 
@@ -95,7 +95,7 @@ class Game : public QObject {
         const QVector<Player*>& players() const {
             return m_players;
         };
-        void setPlayers(QVector<Player*>);
+        void setPlayers(const QVector<Player*>&);
 
         // vrati vektor plochy a vrati a nastavi jeho velkost
         QVector< QVector<Square> >& squareBoard() {

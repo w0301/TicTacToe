@@ -14,6 +14,8 @@
 #include "main.h"
 #include "kernel/game.h"
 #include "kernel/player.h"
+
+#include "ui/newgamedlg.h"
 #include "ui/mainwindow.h"
 #include "ui/playboard.h"
 
@@ -126,13 +128,14 @@ void PlayerListFrame::unsetGame() {
         disconnect(m_game, SIGNAL(gameStopped()), m_actuPlayerName, SLOT(clear()));
 
         m_game = NULL;
+        m_playerList->clear();
     }
 }
 
 // MainWindow class
 MainWindow::MainWindow() :
         QMainWindow(NULL), m_game(NULL), m_playBoard(NULL), m_timeLimitFrame(NULL),
-        m_leftDock(NULL) {
+        m_leftDock(NULL), m_newGameDlg(NULL) {
     /// nastavenie defaultnych hodnot
     setWindowTitle( tr("TicTacToe") );
     setMinimumSize(505, 405);
@@ -170,15 +173,20 @@ MainWindow::MainWindow() :
     // priradenie docku oknu
     addDockWidget(Qt::LeftDockWidgetArea, m_leftDock);
 
-    // vytvorenie novej hry a priradenie centralneho
-    // widgetu v konstruktore
-    setGame( new Game(this, DEFAULT_BOARD_SIZE, 30000, DEFAULT_WIN_STONES) );
 
-    // pridanie hracov a spustenie hry
-    QVector<Player*> plVec;
-    plVec.push_back(new Player(NULL, new CirclePlayerSign(Qt::red), "Wizard"));
-    plVec.push_back(new Player(NULL, new CrossPlayerSign(Qt::blue), "Arcan"));
-    m_game->startGame(plVec);
+    // vytvorenie dialogov a pod.
+    m_newGameDlg = new NewGameDialog(this);
+    connect(m_newGameDlg, SIGNAL(newGameCreated(Game*)), this, SLOT(setGame(Game*)));
+
+    // vytvorenie menu
+    QMenuBar *mainMenuBar = new QMenuBar(this);
+    setMenuBar(mainMenuBar);
+
+    // menu s polozkami pre ovladanie hry
+    QMenu *gameMenu = new QMenu(tr("&Game"), mainMenuBar);
+    QAction *newGameAction = gameMenu->addAction( tr("&New game...") );
+    mainMenuBar->addMenu(gameMenu);
+    connect(newGameAction, SIGNAL(triggered()), m_newGameDlg, SLOT(exec()));
 }
 
 MainWindow::~MainWindow() {
@@ -208,6 +216,9 @@ void MainWindow::setGame(Game *game) {
         // signali pre check box pauzi na docku
         connect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
         connect(m_game, SIGNAL(gamePaused(bool)), m_pauseCheckBox, SLOT(setChecked(bool)));
+
+        // spustime hru
+        m_game->startGame();
     }
 }
 

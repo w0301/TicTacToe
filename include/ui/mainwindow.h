@@ -21,6 +21,7 @@
 class Game;
 class Player;
 class PlayBoard;
+class NewGameDialog;
 
 class QLabel;
 class QCheckBox;
@@ -126,6 +127,9 @@ class MainWindow : public QMainWindow {
 
         // docky okna - zatial jeden mozno bude aj druhy
         QDockWidget *m_leftDock;
+
+        // dialog novej hry
+        NewGameDialog *m_newGameDlg;
 };
 
 #endif // MAINWINDOW_H

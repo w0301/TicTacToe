@@ -90,7 +90,7 @@ class Player : public QObject {
     Q_OBJECT
 
     public:
-        Player(QObject*, PlayerSign*, QString = QString(""));
+        Player(QObject*, PlayerSign*, QString = QString("NoName"));
         virtual ~Player();
 
         // klasicke pristupove funkcie
