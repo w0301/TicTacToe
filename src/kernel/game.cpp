@@ -18,21 +18,13 @@
 
 #include <Qt>
 
-// vytvori objekt a spusti hru
-Game::Game(const QVector<Player*>& players, QObject *parent, int size, int time, int toWin) :
+// vytvori objekt a nastavi vector s hracmi
+Game::Game(int size, int time, int toWin, const QVector<Player*>& players, QObject *parent) :
         QObject(parent), m_players(), m_actualPlayerIndex(0), m_squareBoard(),
         m_isRunning(false), m_isPaused(false), m_squareCount(size), m_timeLimit(time),
         m_actuTimeLimit(time), m_timerID(-1), m_toWin(toWin) {
     setSquareBoardSize(m_squareCount);
     setPlayers(players);
-}
-
-// iba vytvori objekt, hru nespusta
-Game::Game(QObject *parent, int size, int time, int toWin) :
-        QObject(parent), m_players(), m_actualPlayerIndex(0), m_squareBoard(),
-        m_isRunning(false), m_isPaused(false), m_squareCount(size), m_timeLimit(time),
-        m_actuTimeLimit(time), m_timerID(-1), m_toWin(toWin) {
-    setSquareBoardSize(m_squareCount);
 }
 
 // nastavi novu velkost plochy hry - plocha je

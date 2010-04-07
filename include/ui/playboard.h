@@ -29,7 +29,7 @@ class PlayBoard : public QWidget {
     public:
         // vytvori hraciu plochu s rodicom a Game objektom,
         // ktory na nej pracuje
-        PlayBoard(QWidget*, Game* = NULL);
+        PlayBoard(Game* = NULL, QWidget* = NULL);
 
         // mozno budu derivati, kt. budu upravovat vzhlad
         virtual ~PlayBoard() { };

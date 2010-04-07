@@ -17,12 +17,14 @@
 #include "main.h"
 
 #include <QWizard>
-#include <QWizardPage>
+
 
 class Game;
 
 class QLabel;
 class QLineEdit;
+class QSpinBox;
+class QWizardPage;
 
 // NewGameDialog class
 class NewGameDialog : public QWizard {
@@ -48,9 +50,9 @@ class NewGameDialog : public QWizard {
 
     private:
         // widgety 1. strany
-        QLineEdit *m_playersCount;
-        QLineEdit *m_signsCountToWin;
-        QLineEdit *m_boardSize;
+        QSpinBox *m_playersCount;
+        QSpinBox *m_signsCountToWin;
+        QSpinBox *m_boardSize;
         QLineEdit *m_timeLimit;
 
 };

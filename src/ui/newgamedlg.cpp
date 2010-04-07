@@ -14,9 +14,12 @@
 
 #include "kernel/game.h"
 #include "kernel/player.h"
+#include "kernel/playersign.h"
+
 #include "ui/newgamedlg.h"
 
 #include <QLabel>
+#include <QSpinBox>
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -38,11 +41,11 @@ NewGameDialog::~NewGameDialog() {
 void NewGameDialog::createNewGame() {
     QVector<Player*> players;
     players.reserve(m_playersCount->text().toInt());
-    players.push_back( new Player(NULL, new CrossPlayerSign(Qt::blue), "Wizard") );
-    players.push_back( new Player(NULL, new CirclePlayerSign(Qt::red), "Arcan") );
+    players.push_back( new Player(new CrossPlayerSign(Qt::blue), "Wizard") );
+    players.push_back( new Player(new CirclePlayerSign(Qt::red), "Arcan") );
 
     emit newGameCreated(
-       new Game(players, NULL, m_boardSize->text().toInt(), m_timeLimit->text().toInt()*1000, m_signsCountToWin->text().toInt())
+       new Game(m_boardSize->value(), m_timeLimit->text().toInt()*1000, m_signsCountToWin->value(), players, NULL)
    );
 }
 
@@ -54,17 +57,24 @@ QWizardPage *NewGameDialog::createInitialPage() {
     // pocet hracov
     QHBoxLayout *playersCountLayout = new QHBoxLayout;
     playersCountLayout->addWidget( new QLabel( tr("Players count: ") ) );
-    playersCountLayout->addWidget( (m_playersCount = new QLineEdit( QString().setNum(DEFAULT_PLAYERS_COUNT) )) );
-
-    // pocet podpisov v rade na vytazstvo
-    QHBoxLayout *signsCountToWinLayout = new QHBoxLayout;
-    signsCountToWinLayout->addWidget( new QLabel( tr("Number of signs to win: ") ) );
-    signsCountToWinLayout->addWidget( (m_signsCountToWin = new QLineEdit( QString().setNum(DEFAULT_WIN_STONES) )) );
+    playersCountLayout->addWidget( (m_playersCount = new QSpinBox) );
+    m_playersCount->setValue(DEFAULT_PLAYERS_COUNT);
+    // TODO: maximum bude pocet roznych podpisov
+    m_playersCount->setRange(MINIMUM_PLAYERS_COUNT, 2);
 
     // velkost plochy
     QHBoxLayout *boardSizeLayout = new QHBoxLayout;
     boardSizeLayout->addWidget( new QLabel( tr("Number of squares in board side: ") ) );
-    boardSizeLayout->addWidget( (m_boardSize = new QLineEdit( QString().setNum(DEFAULT_BOARD_SIZE) )) );
+    boardSizeLayout->addWidget( (m_boardSize = new QSpinBox) );
+    m_boardSize->setValue(DEFAULT_BOARD_SIZE);
+    m_boardSize->setRange(MINIMUM_BOARD_SIZE, MAXIMUM_BOARD_SIZE);
+
+    // pocet podpisov v rade na vytazstvo
+    QHBoxLayout *signsCountToWinLayout = new QHBoxLayout;
+    signsCountToWinLayout->addWidget( new QLabel( tr("Number of signs to win: ") ) );
+    signsCountToWinLayout->addWidget( (m_signsCountToWin = new QSpinBox) );
+    m_signsCountToWin->setValue(DEFAULT_WIN_STONES);
+    m_signsCountToWin->setRange(MINIMUM_WIN_SIGNS_COUNT, MAXIMUM_BOARD_SIZE);
 
     // casovy limit tahu
     QHBoxLayout *timeLimitLayout = new QHBoxLayout;

@@ -13,14 +13,16 @@
 
 #include "main.h"
 #include "ui/playboard.h"
+
 #include "kernel/game.h"
 #include "kernel/player.h"
+#include "kernel/playersign.h"
 
 #include <QtGui>
 
 
 // PlayBoard class
-PlayBoard::PlayBoard(QWidget *parent, Game *game) :
+PlayBoard::PlayBoard(Game *game, QWidget *parent) :
         QWidget(parent), m_game(NULL), m_clickEnabled(false), m_sideSize(0), m_fromLeft(0), m_fromTop(0) {
     // plocha sa zatial neda pouzit => nemusime ju ukazovat
     hide();

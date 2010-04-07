@@ -20,6 +20,12 @@
 #define DEFAULT_WINANIM_TIME 5000
 #define DEFAULT_TIME_LIMIT 0
 
+// minimalne a maximalne hodnoty
+#define MINIMUM_PLAYERS_COUNT 2
+#define MINIMUM_BOARD_SIZE 3
+#define MAXIMUM_BOARD_SIZE 50
+#define MINIMUM_WIN_SIGNS_COUNT MINIMUM_BOARD_SIZE
+
 // pre update plochy - vpodstate potrebne iba pre sietovych hracov
 #define CLEAR -100
 #define WHOLE -1

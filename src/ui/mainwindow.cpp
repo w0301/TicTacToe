@@ -14,6 +14,7 @@
 #include "main.h"
 #include "kernel/game.h"
 #include "kernel/player.h"
+#include "kernel/playersign.h"
 
 #include "ui/newgamedlg.h"
 #include "ui/mainwindow.h"
@@ -141,13 +142,16 @@ MainWindow::MainWindow() :
     setMinimumSize(505, 405);
 
     /// vytvorenie hracej plochy
-    m_playBoard = new PlayBoard(this);
+    m_playBoard = new PlayBoard;
     setCentralWidget(m_playBoard);
 
     /// vytvorenie laveho docku
     m_leftDock = new QDockWidget(this);
     m_leftDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     m_leftDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+
+    // panel zobrazime iba ked bezi hra - pripojenie vo funkcii setGame
+    m_leftDock->hide();
 
     // pomocny widget a layout
     QWidget *leftDockWidgets = new QWidget(m_leftDock);
@@ -217,6 +221,10 @@ void MainWindow::setGame(Game *game) {
         connect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
         connect(m_game, SIGNAL(gamePaused(bool)), m_pauseCheckBox, SLOT(setChecked(bool)));
 
+        // signali pre zobrazenie/schovanie laveho docku
+        connect(m_game, SIGNAL(gameStarted(Player*)), m_leftDock, SLOT(show()));
+        connect(m_game, SIGNAL(gameStopped()), m_leftDock, SLOT(hide()));
+
         // spustime hru
         m_game->startGame();
     }
@@ -235,6 +243,8 @@ void MainWindow::unsetGame() {
         disconnect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
         disconnect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
         disconnect(m_game, SIGNAL(gamePaused()), m_pauseCheckBox, SLOT(click()));
+        disconnect(m_game, SIGNAL(gameStarted(Player*)), m_leftDock, SLOT(show()));
+        disconnect(m_game, SIGNAL(gameStopped()), m_leftDock, SLOT(hide()));
 
         // a nakoniec zmazanie samotnej hry
         delete m_game;

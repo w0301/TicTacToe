@@ -16,81 +16,19 @@
 
 #include "main.h"
 
-#include <QColor>
-#include <QPixmap>
 #include <QObject>
 #include <QString>
 
+class PlayerSign;
+
 class QWidget;
-
-// abstraktny predok "podpisu" hraca na ploche
-class PlayerSign {
-    public:
-        PlayerSign() { } ;
-        virtual ~PlayerSign() { } ;
-
-        // vrati pixmapu parametre - widget s ktoreho prekoporije pozadie,
-        // bod s ktoreho zacne brat udaje z widgetu, velkost stvorceka widgetu
-        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
-};
-
-// trieda pre rucne nakresene "podpisy hracov na ploche"
-class PaintedPlayerSign : public PlayerSign {
-    public:
-        PaintedPlayerSign(const QColor&);
-        PaintedPlayerSign(const PaintedPlayerSign&);
-        virtual ~PaintedPlayerSign() { } ;
-
-        PaintedPlayerSign& operator= (const PaintedPlayerSign&);
-
-        // praca s farbou
-        QColor& color() {
-            return m_color;
-        };
-        const QColor& color() const {
-            return m_color;
-        };
-        void setColor(const QColor& col) {
-            m_color = col;
-        };
-
-        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
-
-    private:
-        QColor m_color;
-};
-
-// trieda pre nakreslenie kruzku
-class CirclePlayerSign : public PaintedPlayerSign {
-    public:
-        CirclePlayerSign(const QColor&);
-        CirclePlayerSign(const CirclePlayerSign&);
-        virtual ~CirclePlayerSign() { } ;
-
-        CirclePlayerSign& operator= (const CirclePlayerSign&);
-
-        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
-};
-
-// trieda pre nakreslenie krizika
-class CrossPlayerSign : public PaintedPlayerSign {
-    public:
-        CrossPlayerSign(const QColor&);
-        CrossPlayerSign(const CrossPlayerSign&);
-        virtual ~CrossPlayerSign() { } ;
-
-        CrossPlayerSign& operator= (const CrossPlayerSign&);
-
-        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
-};
-
 
 // trieda hraca
 class Player : public QObject {
     Q_OBJECT
 
     public:
-        Player(QObject*, PlayerSign*, QString = QString("NoName"));
+        Player(PlayerSign*, QString = QString("NoName"), QObject* = NULL);
         virtual ~Player();
 
         // klasicke pristupove funkcie

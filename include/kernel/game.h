@@ -75,9 +75,10 @@ class Game : public QObject {
                 Player *m_player;
                 bool m_isWinning;
         };
+
         // konstrutkory
-        Game(QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
-        Game(const QVector<Player*>&, QObject* = NULL, int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES);
+        Game(int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES,
+             const QVector<Player*>& = QVector<Player*>(), QObject* = NULL);
 
         virtual ~Game() { };
 
