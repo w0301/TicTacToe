@@ -22,6 +22,9 @@ QPixmap PlayerSign::signPixmap(const QWidget* board, QPoint startAt, int size) {
     if(board != NULL) {
         ret.fill(board, startAt);
     }
+    else {
+        ret.fill(Qt::white);
+    }
     return ret;
 }
 

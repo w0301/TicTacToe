@@ -42,6 +42,8 @@ PlayerCreator::PlayerCreator(QWidget *parent) :
 
     // box pre vyber podpisu
     mainLayout->addWidget( (m_signType = new QComboBox) );
+    refreshSignTypes();
+
 
 }
 
@@ -51,7 +53,7 @@ void PlayerCreator::refreshSignTypes() {
     typedef const QPair<bool, PlayerCreatorBase::PlayerSignConstructor>& ref;
     foreach(ref i, list) {
         if(i.first == true) {
-            m_signType->addItem( QIcon(i.second()->signPixmap(m_signType, QPoint(0, 0), 16)), "" );
+            m_signType->addItem( QIcon(i.second()->signPixmap(NULL, QPoint(0, 0), 16)), "" );
         }
     }
 }
