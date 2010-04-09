@@ -16,10 +16,12 @@
 
 #include "main.h"
 
+#include <QHash>
 #include <QWizard>
 
 
 class Game;
+class PlayerCreatorBase;
 
 class QLabel;
 class QLineEdit;
@@ -31,6 +33,9 @@ class NewGameDialog : public QWizard {
     Q_OBJECT
 
     public:
+        typedef PlayerCreatorBase *(*PlayerCreatorConstructor)();
+        typedef QVector< QPair<QString, PlayerCreatorConstructor> > PlayerCreatorsList;
+
         // vytvori dialog
         NewGameDialog(QWidget* = NULL);
 
@@ -40,6 +45,14 @@ class NewGameDialog : public QWizard {
         // vytvori jednotlive strany
         QWizardPage *createInitialPage();
         QWizardPage *createPlayersPage();
+
+        // sprava listu createrov
+        static void registerCreator(const QString& name, PlayerCreatorConstructor cnt) {
+            m_playerCreators.push_back( QPair<QString, PlayerCreatorConstructor>(name, cnt) );
+        };
+        static PlayerCreatorsList& creatorsList() {
+            return m_playerCreators;
+        };
 
     public slots:
         // vytvori hru a posle ju signalom newGameCreated
@@ -54,6 +67,9 @@ class NewGameDialog : public QWizard {
         QSpinBox *m_signsCountToWin;
         QSpinBox *m_boardSize;
         QLineEdit *m_timeLimit;
+
+        // zoznam vsetkych tried, ktore vytvaraju hracov
+        static PlayerCreatorsList m_playerCreators;
 
 };
 

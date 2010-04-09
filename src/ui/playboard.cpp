@@ -12,11 +12,11 @@
 */
 
 #include "main.h"
-#include "ui/playboard.h"
-
 #include "kernel/game.h"
 #include "kernel/player.h"
-#include "kernel/playersign.h"
+
+#include "ui/playboard.h"
+#include "ui/playersign.h"
 
 #include <QtGui>
 

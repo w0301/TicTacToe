@@ -14,8 +14,8 @@
 #include "main.h"
 #include "kernel/game.h"
 #include "kernel/player.h"
-#include "kernel/playersign.h"
 
+#include "ui/playersign.h"
 #include "ui/newgamedlg.h"
 #include "ui/mainwindow.h"
 #include "ui/playboard.h"

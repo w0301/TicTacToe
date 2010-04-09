@@ -13,7 +13,8 @@
 
 #include "main.h"
 #include "kernel/player.h"
-#include "kernel/playersign.h"
+
+#include "ui/playersign.h"
 
 #include <QPainter>
 

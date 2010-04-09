@@ -11,7 +11,8 @@
 *   http://www.gnu.org/licenses/gpl.txt
 */
 
-#include "kernel/playersign.h"
+#include "ui/playersign.h"
+#include "ui/playercreator.h"
 
 #include <QPainter>
 
@@ -49,12 +50,14 @@ QPixmap PaintedPlayerSign::signPixmap(const QWidget* board, QPoint startAt, int 
 //| CirclePlayerSign class
 CirclePlayerSign::CirclePlayerSign(const QColor& col) :
         PaintedPlayerSign(col) {
-
+    // registracia do systemu, ktory uchovava typy podpisov
+    PlayerCreatorBase::registerSign( &CirclePlayerSign::createSign );
 }
 
 CirclePlayerSign::CirclePlayerSign(const CirclePlayerSign& from) :
         PaintedPlayerSign(from) {
-
+    // registracia do systemu, ktory uchovava typy podpisov
+    PlayerCreatorBase::registerSign( &CirclePlayerSign::createSign );
 }
 
 CirclePlayerSign& CirclePlayerSign::operator= (const CirclePlayerSign& from) {
@@ -79,12 +82,14 @@ QPixmap CirclePlayerSign::signPixmap(const QWidget *board, QPoint startAt, int s
 //| CrossPlayerSign class
 CrossPlayerSign::CrossPlayerSign(const QColor& col) :
         PaintedPlayerSign(col) {
-
+    // registracia do systemu, ktory uchovava typy podpisov
+    PlayerCreatorBase::registerSign( &CrossPlayerSign::createSign );
 }
 
 CrossPlayerSign::CrossPlayerSign(const CrossPlayerSign& from) :
         PaintedPlayerSign(from) {
-
+    // registracia do systemu, ktory uchovava typy podpisov
+    PlayerCreatorBase::registerSign( &CrossPlayerSign::createSign );
 }
 
 CrossPlayerSign& CrossPlayerSign::operator= (const CrossPlayerSign& from) {

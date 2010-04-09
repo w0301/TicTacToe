@@ -17,13 +17,15 @@
 #include "main.h"
 
 #include <QObject>
+#include <QWidget>
 #include <QString>
 
+class Player;
 class PlayerSign;
 
 class QWidget;
 
-// trieda hraca
+// trieda obucajneho hraca
 class Player : public QObject {
     Q_OBJECT
 

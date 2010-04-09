@@ -14,8 +14,8 @@
 
 #include "kernel/game.h"
 #include "kernel/player.h"
-#include "kernel/playersign.h"
 
+#include "ui/playersign.h"
 #include "ui/newgamedlg.h"
 
 #include <QLabel>
@@ -26,6 +26,8 @@
 
 
 // NewGameDialog class
+NewGameDialog::PlayerCreatorsList NewGameDialog::m_playerCreators;
+
 NewGameDialog::NewGameDialog(QWidget *parent) :
         QWizard(parent), m_playersCount(NULL), m_signsCountToWin(NULL),
         m_boardSize(NULL), m_timeLimit(NULL) {

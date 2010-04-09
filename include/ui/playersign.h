@@ -26,11 +26,17 @@ class PlayerSign {
         // vrati pixmapu parametre - widget s ktoreho prekoporije pozadie,
         // bod s ktoreho zacne brat udaje z widgetu, velkost stvorceka widgetu
         virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+
+        // vytvori novy sign
+        static PlayerSign* createSign() {
+            return new PlayerSign;
+        };
 };
 
 // trieda pre rucne nakresene "podpisy hracov na ploche"
 class PaintedPlayerSign : public PlayerSign {
     public:
+        PaintedPlayerSign() { };
         PaintedPlayerSign(const QColor&);
         PaintedPlayerSign(const PaintedPlayerSign&);
         virtual ~PaintedPlayerSign() { } ;
@@ -50,6 +56,11 @@ class PaintedPlayerSign : public PlayerSign {
 
         virtual QPixmap signPixmap(const QWidget*, QPoint, int);
 
+        // vytvori novy sign
+        static PlayerSign* createSign() {
+            return new PaintedPlayerSign;
+        };
+
     private:
         QColor m_color;
 };
@@ -57,6 +68,7 @@ class PaintedPlayerSign : public PlayerSign {
 // trieda pre nakreslenie kruzku
 class CirclePlayerSign : public PaintedPlayerSign {
     public:
+        CirclePlayerSign() { };
         CirclePlayerSign(const QColor&);
         CirclePlayerSign(const CirclePlayerSign&);
         virtual ~CirclePlayerSign() { } ;
@@ -64,11 +76,18 @@ class CirclePlayerSign : public PaintedPlayerSign {
         CirclePlayerSign& operator= (const CirclePlayerSign&);
 
         virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+
+        // vytvori novy sign
+        static PlayerSign* createSign() {
+            return new CirclePlayerSign;
+        };
+
 };
 
 // trieda pre nakreslenie krizika
 class CrossPlayerSign : public PaintedPlayerSign {
     public:
+        CrossPlayerSign() { };
         CrossPlayerSign(const QColor&);
         CrossPlayerSign(const CrossPlayerSign&);
         virtual ~CrossPlayerSign() { } ;
@@ -76,6 +95,11 @@ class CrossPlayerSign : public PaintedPlayerSign {
         CrossPlayerSign& operator= (const CrossPlayerSign&);
 
         virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+
+        // vytvori novy sign
+        static PlayerSign* createSign() {
+            return new CrossPlayerSign;
+        };
 };
 
 
