@@ -17,8 +17,9 @@
 #include "main.h"
 
 #include <QHash>
+#include <QList>
+#include <QVector>
 #include <QWizard>
-
 
 class Game;
 class PlayerCreatorBase;
@@ -31,7 +32,7 @@ class QWizardPage;
 class QVBoxLayout;
 
 // NewPlayerWidget class
-class NewPlayerWidget : QWidget {
+class NewPlayerWidget : public QWidget {
     Q_OBJECT
 
     public:
@@ -58,30 +59,22 @@ class NewGameDialog : public QWizard {
     Q_OBJECT
 
     public:
-        typedef PlayerCreatorBase *(*PlayerCreatorConstructor)();
-        typedef QVector< QPair<QString, PlayerCreatorConstructor> > PlayerCreatorsList;
-
         // vytvori dialog
         NewGameDialog(QWidget* = NULL);
 
         // znici dialog
         ~NewGameDialog();
 
-        // vytvori jednotlive strany
-        QWizardPage *createInitialPage();
-        QWizardPage *createPlayersPage();
-
-        // sprava listu createrov
-        static void registerCreator(const QString& name, PlayerCreatorConstructor cnt) {
-            m_playerCreators.push_back( QPair<QString, PlayerCreatorConstructor>(name, cnt) );
-        };
-        static PlayerCreatorsList& creatorsList() {
-            return m_playerCreators;
-        };
-
     public slots:
         // vytvori hru a posle ju signalom newGameCreated
         void createNewGame();
+
+        // vytvori a prida jednotlive strany
+        void addInitialPage();
+        void addPlayersPage();
+
+        // naplni stranu s hracmi + testuje ci sa zmenilo na stranu hracov
+        void fillPlayersPage(int);
 
     signals:
         void newGameCreated(Game*);
@@ -93,8 +86,9 @@ class NewGameDialog : public QWizard {
         QSpinBox *m_boardSize;
         QLineEdit *m_timeLimit;
 
-        // zoznam vsetkych tried, ktore vytvaraju hracov
-        static PlayerCreatorsList m_playerCreators;
+        // 2. strana a jej widgety
+        QWizardPage *m_playersPage;
+        QVector<NewPlayerWidget*> m_newPlayerWidgets;
 };
 
 #endif // NEWGAMEDLG_H

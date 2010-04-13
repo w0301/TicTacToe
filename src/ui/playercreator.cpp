@@ -17,6 +17,13 @@
 
 #include <QtGui>
 
+// PlayerCreatorRegistrator
+PlayerCreatorRegistrator::PlayerCreatorsList PlayerCreatorRegistrator::sm_allCreators;
+
+PlayerCreatorRegistrator::PlayerCreatorRegistrator(const QString& name, PlayerCreatorConstructor cnt) {
+    sm_allCreators.append( qMakePair(name, cnt) );
+}
+
 // PlayerCreatorBase
 PlayerCreatorBase::SignsList PlayerCreatorBase::m_signsList;
 
@@ -25,13 +32,11 @@ PlayerCreatorBase::PlayerCreatorBase(QWidget *parent) :
 
 }
 
-
 // PlayerCreator
+PlayerCreatorRegistrator PlayerCreator::sm_register(QObject::tr("Local player"), &PlayerCreator::createCreator);
+
 PlayerCreator::PlayerCreator(QWidget *parent) :
         PlayerCreatorBase(parent), m_nameEdit(NULL), m_signType(NULL), m_colorButton(NULL), m_colorDialog(NULL) {
-    // registracia tohoto creatora do systemu
-    NewGameDialog::registerCreator( tr("Local player"), &createCreator );
-
     // layout pre widget
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
@@ -63,4 +68,3 @@ void PlayerCreator::startColorDialog() {
 void PlayerCreator::changeColorButton(const QColor&) {
 
 }
-

@@ -25,9 +25,9 @@
 NewPlayerWidget::NewPlayerWidget(QWidget *parent) :
         QWidget(parent), m_playerCreators(NULL), m_actualCreator(NULL), m_mainLayout(NULL) {
     // pridanie dat do combo boxu a jeho vytvorenie
-    NewGameDialog::PlayerCreatorsList& list = NewGameDialog::creatorsList();
+    PlayerCreatorRegistrator::PlayerCreatorsList& list = PlayerCreatorRegistrator::list();
     m_playerCreators = new QComboBox(this);
-    for(NewGameDialog::PlayerCreatorsList::const_iterator i = list.begin(); i != list.end(); i++) {
+    for(PlayerCreatorRegistrator::PlayerCreatorsList::const_iterator i = list.begin(); i != list.end(); i++) {
         m_playerCreators->addItem(i->first);
     }
     // nastavenie aktualenho indexu a postaranie sa o to aby sa pri zmene signalu zmenil
@@ -45,10 +45,13 @@ NewPlayerWidget::NewPlayerWidget(QWidget *parent) :
 
 // nastavenie vytvaraca
 void NewPlayerWidget::setActualCreator(int i) {
+    if(i == -1) {
+        return;
+    }
     if(m_actualCreator != NULL) {
         delete m_actualCreator;
     }
-    m_actualCreator = (NewGameDialog::creatorsList())[i].second();
+    m_actualCreator = (PlayerCreatorRegistrator::list())[i].second();
     m_actualCreator->setParent(this);
 
     // pridanie do layoutu
@@ -56,13 +59,17 @@ void NewPlayerWidget::setActualCreator(int i) {
 }
 
 // NewGameDialog class
-NewGameDialog::PlayerCreatorsList NewGameDialog::m_playerCreators;
-
 NewGameDialog::NewGameDialog(QWidget *parent) :
         QWizard(parent), m_playersCount(NULL), m_signsCountToWin(NULL),
-        m_boardSize(NULL), m_timeLimit(NULL) {
+        m_boardSize(NULL), m_timeLimit(NULL), m_playersPage(NULL) {
+    addInitialPage();
+    addPlayersPage();
+
+    // po zmenenini na stranu hracov sa naplni
+    connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(fillPlayersPage(int)));
+
+    // po prijati dialogu vytvorime novu hru
     connect(this, SIGNAL(accepted()), this, SLOT(createNewGame()));
-    addPage( createInitialPage() );
 }
 
 NewGameDialog::~NewGameDialog() {
@@ -82,7 +89,7 @@ void NewGameDialog::createNewGame() {
 }
 
 // vytvaranie stran
-QWizardPage *NewGameDialog::createInitialPage() {
+void NewGameDialog::addInitialPage() {
     QWizardPage *newPage = new QWizardPage;
     newPage->setTitle( tr("Main settings") );
 
@@ -123,7 +130,32 @@ QWizardPage *NewGameDialog::createInitialPage() {
 
     // nastavenie layoutu a navrat funkcie
     newPage->setLayout(mainLayout);
-    return newPage;
+    addPage(newPage);
 }
 
+void NewGameDialog::addPlayersPage() {
+    // vitvorenie novej strany
+    m_playersPage = new QWizardPage;
+    m_playersPage->setTitle( tr("Players") );
 
+    // vytvorenie layoutu
+    QVBoxLayout *mainLayout = new QVBoxLayout(m_playersPage);
+
+    // nastavenie layoutu a navrat funkcie
+    m_playersPage->setLayout(mainLayout);
+    addPage(m_playersPage);
+}
+
+void NewGameDialog::fillPlayersPage(int i) {
+    if(page(i) != m_playersPage) {
+        return;
+    }
+    // naplnenie strany pozadovanym poctom widgetov
+    int size = m_playersCount->value();
+    m_newPlayerWidgets.reserve(size);
+    for(int i = 0; i != size; i++) {
+        NewPlayerWidget *newWidget = new NewPlayerWidget;
+        m_playersPage->layout()->addWidget(newWidget);
+        m_newPlayerWidgets.push_back(newWidget);
+    }
+}
