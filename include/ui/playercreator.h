@@ -29,6 +29,8 @@ class QColorDialog;
 
 // zakladna trieda pre triedy, ktore zobrazuju GUI vytvorenie hracov
 class PlayerCreatorBase : public QWidget {
+    Q_OBJECT
+
     public:
         typedef PlayerSign *(*PlayerSignConstructor)();
         typedef QVector< QPair<bool, PlayerSignConstructor> > SignsList;
@@ -45,6 +47,7 @@ class PlayerCreatorBase : public QWidget {
         // parameter a vrati jeho ukazatel
         virtual Player* createPlayer() = 0;
 
+    public slots:
         // registruje sign / vrati ich list
         static void registerSign(PlayerSignConstructor cntFunc) {
             m_signsList.push_back( QPair<bool, PlayerSignConstructor>(true, cntFunc) );

@@ -24,9 +24,34 @@ class Game;
 class PlayerCreatorBase;
 
 class QLabel;
-class QLineEdit;
 class QSpinBox;
+class QLineEdit;
+class QComboBox;
 class QWizardPage;
+class QVBoxLayout;
+
+// NewPlayerWidget class
+class NewPlayerWidget : QWidget {
+    Q_OBJECT
+
+    public:
+        NewPlayerWidget(QWidget* = NULL);
+        ~NewPlayerWidget() { };
+
+    public slots:
+        // nastavi vytvarac podla indexu vo vectore NewGameDialog::creatorsList
+        void setActualCreator(int);
+
+    private:
+        // uchovava zoznam vsetkych moznych vytvaracov
+        QComboBox *m_playerCreators;
+
+        // uchovava widget prave aktualneho vytvaraca
+        PlayerCreatorBase *m_actualCreator;
+
+        // layout, kt. usporiadava 2 widgety
+        QVBoxLayout *m_mainLayout;
+};
 
 // NewGameDialog class
 class NewGameDialog : public QWizard {
@@ -70,7 +95,6 @@ class NewGameDialog : public QWizard {
 
         // zoznam vsetkych tried, ktore vytvaraju hracov
         static PlayerCreatorsList m_playerCreators;
-
 };
 
 #endif // NEWGAMEDLG_H

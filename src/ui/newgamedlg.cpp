@@ -16,14 +16,44 @@
 #include "kernel/player.h"
 
 #include "ui/playersign.h"
+#include "ui/playercreator.h"
 #include "ui/newgamedlg.h"
 
-#include <QLabel>
-#include <QSpinBox>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QtGui>
 
+// NewPlayerWidget class
+NewPlayerWidget::NewPlayerWidget(QWidget *parent) :
+        QWidget(parent), m_playerCreators(NULL), m_actualCreator(NULL), m_mainLayout(NULL) {
+    // pridanie dat do combo boxu a jeho vytvorenie
+    NewGameDialog::PlayerCreatorsList& list = NewGameDialog::creatorsList();
+    m_playerCreators = new QComboBox(this);
+    for(NewGameDialog::PlayerCreatorsList::const_iterator i = list.begin(); i != list.end(); i++) {
+        m_playerCreators->addItem(i->first);
+    }
+    // nastavenie aktualenho indexu a postaranie sa o to aby sa pri zmene signalu zmenil
+    // aj vytvarac
+    m_playerCreators->setCurrentIndex(0);
+    connect(m_playerCreators, SIGNAL(activated(int)), this, SLOT(setActualCreator(int)));
+
+    // vytvorenie layoutu
+    m_mainLayout = new QVBoxLayout(this);
+    m_mainLayout->addWidget(m_playerCreators);
+
+    // pridanie vytvaraca z indexu 0
+    setActualCreator(0);
+}
+
+// nastavenie vytvaraca
+void NewPlayerWidget::setActualCreator(int i) {
+    if(m_actualCreator != NULL) {
+        delete m_actualCreator;
+    }
+    m_actualCreator = (NewGameDialog::creatorsList())[i].second();
+    m_actualCreator->setParent(this);
+
+    // pridanie do layoutu
+    m_mainLayout->addWidget(m_actualCreator);
+}
 
 // NewGameDialog class
 NewGameDialog::PlayerCreatorsList NewGameDialog::m_playerCreators;
@@ -61,8 +91,8 @@ QWizardPage *NewGameDialog::createInitialPage() {
     playersCountLayout->addWidget( new QLabel( tr("Players count: ") ) );
     playersCountLayout->addWidget( (m_playersCount = new QSpinBox) );
     m_playersCount->setValue(DEFAULT_PLAYERS_COUNT);
-    // TODO: maximum bude pocet roznych podpisov
-    m_playersCount->setRange(MINIMUM_PLAYERS_COUNT, 2);
+    // maximum bude pocet roznych podpisov
+    m_playersCount->setRange(MINIMUM_PLAYERS_COUNT, PlayerCreatorBase::signsList().size());
 
     // velkost plochy
     QHBoxLayout *boardSizeLayout = new QHBoxLayout;

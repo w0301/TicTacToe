@@ -238,8 +238,8 @@ void MainWindow::unsetGame() {
         m_playerListFrame->unsetGame();
 
         // odpojenie signalov
-        disconnect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
-        disconnect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit(int)));
+        disconnect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit()));
+        disconnect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit()));
         disconnect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
         disconnect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
         disconnect(m_game, SIGNAL(gamePaused()), m_pauseCheckBox, SLOT(click()));

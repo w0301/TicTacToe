@@ -43,8 +43,6 @@ PlayerCreator::PlayerCreator(QWidget *parent) :
     // box pre vyber podpisu
     mainLayout->addWidget( (m_signType = new QComboBox) );
     refreshSignTypes();
-
-
 }
 
 // sloty
