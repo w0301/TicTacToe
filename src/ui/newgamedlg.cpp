@@ -76,6 +76,18 @@ NewGameDialog::~NewGameDialog() {
 
 }
 
+bool NewGameDialog::validateCurrentPage() {
+    QWizard::validateCurrentPage();
+
+    if(currentPage() == m_playersPage && PlayerSignRegistrator::hasOverloadSign()) {
+        QMessageBox errBox(tr("Signs conflict!"), tr("It's not possible to have same sign\nfor more players."),
+                           QMessageBox::Critical, QMessageBox::Ok, QMessageBox::NoButton, QMessageBox::NoButton, this);
+        errBox.exec();
+        return false;
+    }
+    return true;
+}
+
 // vytvorenie novej hry
 void NewGameDialog::createNewGame() {
     // naplni zoznam hracov
@@ -153,10 +165,19 @@ void NewGameDialog::fillPlayersPage(int i) {
     }
     // naplnenie strany pozadovanym poctom widgetov
     int size = m_playersCount->value();
-    m_newPlayerWidgets.reserve(size);
-    for(int i = 0; i != size; i++) {
+    int oldSize = m_newPlayerWidgets.size();
+    if(size < oldSize) {
+        for(int i = size - 1; i != m_newPlayerWidgets.size(); i++) {
+            delete m_newPlayerWidgets[i];
+        }
+    }
+    m_newPlayerWidgets.resize(size);
+    for(int i = oldSize; i != size; i++) {
+        // vytvorime novy widget a pripojime ho tak aby sme vedeli ci
+        // su vsetky konflikty podpisov vyriesene
         NewPlayerWidget *newWidget = new NewPlayerWidget;
+
         m_playersPage->layout()->addWidget(newWidget);
-        m_newPlayerWidgets.push_back(newWidget);
+        m_newPlayerWidgets[i] = newWidget;
     }
 }

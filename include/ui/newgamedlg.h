@@ -73,6 +73,9 @@ class NewGameDialog : public QWizard {
         // znici dialog
         ~NewGameDialog();
 
+        // zisti ci sa mozeme posunut dalej
+        bool validateCurrentPage();
+
     public slots:
         // vytvori hru a posle ju signalom newGameCreated
         void createNewGame();

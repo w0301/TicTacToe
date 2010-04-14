@@ -67,7 +67,7 @@ class PlayerCreator : public PlayerCreatorBase {
 
     public:
         PlayerCreator(QWidget* = NULL);
-        virtual ~PlayerCreator() { };
+        virtual ~PlayerCreator();
 
         // vrati novy objekt seba sameho
         static PlayerCreatorBase* createCreator() {
@@ -93,6 +93,10 @@ class PlayerCreator : public PlayerCreatorBase {
         // pouzitelne podpisy
         void refreshSignTypes();
 
+        // inkrementuje a dekrementuje pocet majitelov podpisov
+        // int - inkrementuje, m_actuIndex - dekrementuje
+        void incDecSings(int);
+
         // nastavi farbu
         void setColor(QColor c) {
             m_color = c;
@@ -110,6 +114,9 @@ class PlayerCreator : public PlayerCreatorBase {
 
         // uchovava farbu podpisu
         QColor m_color;
+
+        // index aktulneho podpisu
+        int m_actuIndex;
 
         // zaregistruje triedu
         static PlayerCreatorRegistrator sm_register;

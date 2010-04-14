@@ -20,7 +20,22 @@
 PlayerSignRegistrator::SignsList PlayerSignRegistrator::sm_allSigns;
 
 PlayerSignRegistrator::PlayerSignRegistrator(PlayerSignConstructor cnt) {
-    sm_allSigns.append( qMakePair(true, cnt) );
+    sm_allSigns.append( qMakePair(0, cnt) );
+}
+
+bool PlayerSignRegistrator::hasOverloadSign() {
+    for(SignsList::const_iterator i = list().begin(); i != list().end(); i++) {
+        if(i->first > 1) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void PlayerSignRegistrator::resetSignsOwners() {
+    for(SignsList::iterator i = list().begin(); i != list().end(); i++) {
+        i->first = 0;
+    }
 }
 
 // PlayerSign class

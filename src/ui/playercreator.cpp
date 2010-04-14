@@ -30,14 +30,14 @@ PlayerCreatorRegistrator::PlayerCreatorRegistrator(const QString& name, PlayerCr
 PlayerCreatorRegistrator PlayerCreator::sm_register(QObject::tr("Local player"), &PlayerCreator::createCreator);
 
 PlayerCreator::PlayerCreator(QWidget *parent) :
-        PlayerCreatorBase(parent), m_nameEdit(NULL), m_signType(NULL), m_colorButton(NULL), m_color(Qt::black) {
+        PlayerCreatorBase(parent), m_nameEdit(NULL), m_signType(NULL), m_colorButton(NULL),
+        m_color(Qt::black), m_actuIndex(-1) {
     // layout pre widget
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
     /// pridanie widgetov do layoutu
     // edit pre meno
     mainLayout->addWidget( ( m_nameEdit = new QLineEdit( tr("Name of player") ) ) );
-    //mainLayout->addSpacing(1);
 
     // button na spustenie dialogu pre vyber farby
     QPixmap buttCol(16, 16);
@@ -47,8 +47,13 @@ PlayerCreator::PlayerCreator(QWidget *parent) :
 
     // box pre vyber podpisu
     mainLayout->addWidget( (m_signType = new QComboBox) );
-    m_signType->setCurrentIndex(-1);
+    connect(m_signType, SIGNAL(currentIndexChanged(int)), this, SLOT(incDecSings(int)));
     refreshSignTypes();
+    m_signType->setCurrentIndex(0);
+}
+
+PlayerCreator::~PlayerCreator() {
+    PlayerSignRegistrator::dec(m_actuIndex);
 }
 
 // vytvori noveho hraca podla prislisnych parametrov
@@ -71,14 +76,12 @@ void PlayerCreator::refreshSignTypes() {
     // a potom ho prislusne naplnime
     PlayerSignRegistrator::SignsList& list = PlayerSignRegistrator::list();
     for(PlayerSignRegistrator::SignsList::const_iterator i = list.begin(); i != list.end(); i++) {
-        if(i->first == true) {
-            PlayerSign *sign = i->second();
-            if(sign->isPainted()) {
-                static_cast<PaintedPlayerSign*>(sign)->setColor( color() );
-            }
-            m_signType->addItem(QIcon(sign->signPixmap(NULL, QPoint(0, 0), 16)), "");
-            delete sign;
+        PlayerSign *sign = i->second();
+        if(sign->isPainted()) {
+            static_cast<PaintedPlayerSign*>(sign)->setColor( color() );
         }
+        m_signType->addItem(QIcon(sign->signPixmap(NULL, QPoint(0, 0), 16)), "");
+        delete sign;
     }
 }
 
@@ -96,4 +99,14 @@ void PlayerCreator::changeColorButton(QColor col) {
     QPixmap buttCol(16, 16);
     buttCol.fill(col);
     m_colorButton->setIcon(QIcon(buttCol));
+}
+
+void PlayerCreator::incDecSings(int i) {
+    if(i != -1) {
+        if(m_actuIndex != -1) {
+            PlayerSignRegistrator::dec(m_actuIndex);
+        }
+        PlayerSignRegistrator::inc(i);
+        m_actuIndex = i;
+    }
 }

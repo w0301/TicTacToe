@@ -25,17 +25,26 @@ class PlayerSign;
 class PlayerSignRegistrator {
     public:
         typedef PlayerSign *(*PlayerSignConstructor)();
-        typedef QList< QPair<bool, PlayerSignConstructor> > SignsList;
+        typedef QList< QPair<int, PlayerSignConstructor> > SignsList;
 
         PlayerSignRegistrator(PlayerSignConstructor);
 
-        // registruje sign / vrati ich list
-        static void enable(PlayerSignConstructor cnt, bool val) {
-            sm_allSigns[sm_allSigns.indexOf(qMakePair(!val, cnt))].first = val;
+        // zmeni pocet vlastnikov sign / vrati ich list
+        static void inc(int i, int n = 1) {
+            sm_allSigns[i].first += n;
+        };
+        static void dec(int i) {
+            inc(i, -1);
         };
         static SignsList& list() {
             return sm_allSigns;
         };
+
+        // vrati true, ked ma nejaky sign viac majitelov
+        static bool hasOverloadSign();
+
+        // resetuje pocet majitelov u kazdeho signu na 0
+        static void resetSignsOwners();
 
     private:
         static SignsList sm_allSigns;
