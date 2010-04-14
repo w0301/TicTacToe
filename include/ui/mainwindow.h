@@ -107,6 +107,7 @@ class MainWindow : public QMainWindow {
     public slots:
         void setGame(Game*);
         void unsetGame();
+        void startNewGameDialog();
 
     private:
         // hra pre okno
@@ -127,9 +128,6 @@ class MainWindow : public QMainWindow {
 
         // docky okna - zatial jeden mozno bude aj druhy
         QDockWidget *m_leftDock;
-
-        // dialog novej hry
-        NewGameDialog *m_newGameDlg;
 };
 
 #endif // MAINWINDOW_H

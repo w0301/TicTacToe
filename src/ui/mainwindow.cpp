@@ -136,7 +136,7 @@ void PlayerListFrame::unsetGame() {
 // MainWindow class
 MainWindow::MainWindow() :
         QMainWindow(NULL), m_game(NULL), m_playBoard(NULL), m_timeLimitFrame(NULL),
-        m_leftDock(NULL), m_newGameDlg(NULL) {
+        m_leftDock(NULL) {
     /// nastavenie defaultnych hodnot
     setWindowTitle( tr("TicTacToe") );
     setMinimumSize(505, 405);
@@ -177,11 +177,6 @@ MainWindow::MainWindow() :
     // priradenie docku oknu
     addDockWidget(Qt::LeftDockWidgetArea, m_leftDock);
 
-
-    // vytvorenie dialogov a pod.
-    m_newGameDlg = new NewGameDialog(this);
-    connect(m_newGameDlg, SIGNAL(newGameCreated(Game*)), this, SLOT(setGame(Game*)));
-
     // vytvorenie menu
     QMenuBar *mainMenuBar = new QMenuBar(this);
     setMenuBar(mainMenuBar);
@@ -190,7 +185,7 @@ MainWindow::MainWindow() :
     QMenu *gameMenu = new QMenu(tr("&Game"), mainMenuBar);
     QAction *newGameAction = gameMenu->addAction( tr("&New game...") );
     mainMenuBar->addMenu(gameMenu);
-    connect(newGameAction, SIGNAL(triggered()), m_newGameDlg, SLOT(exec()));
+    connect(newGameAction, SIGNAL(triggered()), this, SLOT(startNewGameDialog()));
 }
 
 MainWindow::~MainWindow() {
@@ -252,3 +247,10 @@ void MainWindow::unsetGame() {
     }
 }
 
+// vytvori a spusti dialog novej hry
+void MainWindow::startNewGameDialog() {
+    // vytvorenie a spustenie dialogu
+    NewGameDialog newGameDlg(this);
+    connect(&newGameDlg, SIGNAL(newGameCreated(Game*)), this, SLOT(setGame(Game*)));
+    newGameDlg.exec();
+}
