@@ -16,7 +16,14 @@
 
 #include <QPainter>
 
-//| PlayerSign class
+// PlayerSignRegistrator class
+PlayerSignRegistrator::SignsList PlayerSignRegistrator::sm_allSigns;
+
+PlayerSignRegistrator::PlayerSignRegistrator(PlayerSignConstructor cnt) {
+    sm_allSigns.append( qMakePair(true, cnt) );
+}
+
+// PlayerSign class
 QPixmap PlayerSign::signPixmap(const QWidget* board, QPoint startAt, int size) {
     QPixmap ret(size, size);
     if(board != NULL) {
@@ -51,16 +58,16 @@ QPixmap PaintedPlayerSign::signPixmap(const QWidget* board, QPoint startAt, int 
 }
 
 //| CirclePlayerSign class
+PlayerSignRegistrator CirclePlayerSign::sm_register(&CirclePlayerSign::createSign);
+
 CirclePlayerSign::CirclePlayerSign(const QColor& col) :
         PaintedPlayerSign(col) {
-    // registracia do systemu, ktory uchovava typy podpisov
-    PlayerCreatorBase::registerSign( &CirclePlayerSign::createSign );
+
 }
 
 CirclePlayerSign::CirclePlayerSign(const CirclePlayerSign& from) :
         PaintedPlayerSign(from) {
-    // registracia do systemu, ktory uchovava typy podpisov
-    PlayerCreatorBase::registerSign( &CirclePlayerSign::createSign );
+
 }
 
 CirclePlayerSign& CirclePlayerSign::operator= (const CirclePlayerSign& from) {
@@ -83,16 +90,16 @@ QPixmap CirclePlayerSign::signPixmap(const QWidget *board, QPoint startAt, int s
 }
 
 //| CrossPlayerSign class
+PlayerSignRegistrator CrossPlayerSign::sm_register(&CrossPlayerSign::createSign);
+
 CrossPlayerSign::CrossPlayerSign(const QColor& col) :
         PaintedPlayerSign(col) {
-    // registracia do systemu, ktory uchovava typy podpisov
-    PlayerCreatorBase::registerSign( &CrossPlayerSign::createSign );
+
 }
 
 CrossPlayerSign::CrossPlayerSign(const CrossPlayerSign& from) :
         PaintedPlayerSign(from) {
-    // registracia do systemu, ktory uchovava typy podpisov
-    PlayerCreatorBase::registerSign( &CrossPlayerSign::createSign );
+
 }
 
 CrossPlayerSign& CrossPlayerSign::operator= (const CrossPlayerSign& from) {

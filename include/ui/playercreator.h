@@ -50,10 +50,7 @@ class PlayerCreatorBase : public QWidget {
     Q_OBJECT
 
     public:
-        typedef PlayerSign *(*PlayerSignConstructor)();
-        typedef QList< QPair<bool, PlayerSignConstructor> > SignsList;
-
-        PlayerCreatorBase(QWidget* = NULL);
+        PlayerCreatorBase(QWidget *pa = NULL) : QWidget(pa) { };
         virtual ~PlayerCreatorBase() { };
 
         // vytvori instanciu vytvaracej triedy
@@ -62,20 +59,6 @@ class PlayerCreatorBase : public QWidget {
         };
 
         virtual Player* createPlayer() = 0;
-
-        // registruje sign / vrati ich list
-        static void registerSign(PlayerSignConstructor cntFunc) {
-            m_signsList.append( qMakePair(true, cntFunc) );
-        };
-        static void enableSign(PlayerSignConstructor cnt, bool val) {
-            m_signsList[m_signsList.indexOf(qMakePair(!val, cnt))].first = val;
-        };
-        static SignsList& signsList() {
-            return m_signsList;
-        };
-
-    private:
-        static SignsList m_signsList;
 };
 
 // deklaracia vytvaracej triedy pre obycajneho hraca
@@ -92,18 +75,28 @@ class PlayerCreator : public PlayerCreatorBase {
         };
 
         // vrati noveho hraca na zaklade dat z widgetov
-        virtual Player* createPlayer() { return NULL; };
+        virtual Player* createPlayer();
+
+        // vrati farbu
+        const QColor& color() const {
+            return m_color;
+        };
 
     public slots:
         // spusti dialog pre vyber farby
         void startColorDialog();
 
         // zmeni farbu color buttonu
-        void changeColorButton(const QColor&);
+        void changeColorButton(QColor);
 
         // refresne m_signType widget tak aby zobrazoval iba
         // pouzitelne podpisy
         void refreshSignTypes();
+
+        // nastavi farbu
+        void setColor(QColor c) {
+            m_color = c;
+        };
 
     private:
         // edit pre meno hraca
@@ -115,8 +108,8 @@ class PlayerCreator : public PlayerCreatorBase {
         // tlacitko, ktore zobrazuje farbu a spusta dialog pre jej vyber
         QPushButton *m_colorButton;
 
-        // dialog vyberu farby podpisu
-        QColorDialog *m_colorDialog;
+        // uchovava farbu podpisu
+        QColor m_color;
 
         // zaregistruje triedu
         static PlayerCreatorRegistrator sm_register;

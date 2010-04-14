@@ -11,6 +11,8 @@
 *   http://www.gnu.org/licenses/gpl.txt
 */
 
+#include "kernel/player.h"
+
 #include "ui/newgamedlg.h"
 #include "ui/playersign.h"
 #include "ui/playercreator.h"
@@ -24,47 +26,74 @@ PlayerCreatorRegistrator::PlayerCreatorRegistrator(const QString& name, PlayerCr
     sm_allCreators.append( qMakePair(name, cnt) );
 }
 
-// PlayerCreatorBase
-PlayerCreatorBase::SignsList PlayerCreatorBase::m_signsList;
-
-PlayerCreatorBase::PlayerCreatorBase(QWidget *parent) :
-        QWidget(parent) {
-
-}
-
 // PlayerCreator
 PlayerCreatorRegistrator PlayerCreator::sm_register(QObject::tr("Local player"), &PlayerCreator::createCreator);
 
 PlayerCreator::PlayerCreator(QWidget *parent) :
-        PlayerCreatorBase(parent), m_nameEdit(NULL), m_signType(NULL), m_colorButton(NULL), m_colorDialog(NULL) {
+        PlayerCreatorBase(parent), m_nameEdit(NULL), m_signType(NULL), m_colorButton(NULL), m_color(Qt::black) {
     // layout pre widget
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
     /// pridanie widgetov do layoutu
     // edit pre meno
     mainLayout->addWidget( ( m_nameEdit = new QLineEdit( tr("Name of player") ) ) );
-    mainLayout->addSpacing(1);
+    //mainLayout->addSpacing(1);
+
+    // button na spustenie dialogu pre vyber farby
+    QPixmap buttCol(16, 16);
+    buttCol.fill(Qt::black);
+    mainLayout->addWidget( ( m_colorButton = new QPushButton(QIcon(buttCol), "") ) );
+    connect(m_colorButton, SIGNAL(clicked()), this, SLOT(startColorDialog()));
 
     // box pre vyber podpisu
     mainLayout->addWidget( (m_signType = new QComboBox) );
+    m_signType->setCurrentIndex(-1);
     refreshSignTypes();
+}
+
+// vytvori noveho hraca podla prislisnych parametrov
+Player* PlayerCreator::createPlayer() {
+    // vytvorenie objektu podpisu
+    PlayerSign *sign = PlayerSignRegistrator::list()[m_signType->currentIndex()].second();
+    if(sign->isPainted()) {
+        static_cast<PaintedPlayerSign*>(sign)->setColor( color() );
+    }
+
+    // vytvorenie hraca a navrat funkcie
+    return new Player(sign, m_nameEdit->text());
 }
 
 // sloty
 void PlayerCreator::refreshSignTypes() {
-    PlayerCreatorBase::SignsList& list = PlayerCreatorBase::signsList();
-    typedef const QPair<bool, PlayerCreatorBase::PlayerSignConstructor>& ref;
-    foreach(ref i, list) {
-        if(i.first == true) {
-            m_signType->addItem( QIcon(i.second()->signPixmap(NULL, QPoint(0, 0), 16)), "" );
+    // najprv musime list vycistit
+    m_signType->clear();
+
+    // a potom ho prislusne naplnime
+    PlayerSignRegistrator::SignsList& list = PlayerSignRegistrator::list();
+    for(PlayerSignRegistrator::SignsList::const_iterator i = list.begin(); i != list.end(); i++) {
+        if(i->first == true) {
+            PlayerSign *sign = i->second();
+            if(sign->isPainted()) {
+                static_cast<PaintedPlayerSign*>(sign)->setColor( color() );
+            }
+            m_signType->addItem(QIcon(sign->signPixmap(NULL, QPoint(0, 0), 16)), "");
+            delete sign;
         }
     }
 }
 
 void PlayerCreator::startColorDialog() {
-
+    // vytvorenie dialogu a pripojenie slotov
+    QColorDialog colorDialog(this);
+    connect(&colorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(setColor(QColor)));
+    connect(&colorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(refreshSignTypes()));
+    connect(&colorDialog, SIGNAL(colorSelected(QColor)), this, SLOT(changeColorButton(QColor)));
+    colorDialog.exec();
 }
 
-void PlayerCreator::changeColorButton(const QColor&) {
-
+void PlayerCreator::changeColorButton(QColor col) {
+    // zmenenie farby buttonu
+    QPixmap buttCol(16, 16);
+    buttCol.fill(col);
+    m_colorButton->setIcon(QIcon(buttCol));
 }

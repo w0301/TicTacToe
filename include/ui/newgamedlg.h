@@ -39,6 +39,14 @@ class NewPlayerWidget : public QWidget {
         NewPlayerWidget(QWidget* = NULL);
         ~NewPlayerWidget() { };
 
+        // vrati vytvarac hraca
+        PlayerCreatorBase *creator() {
+            return m_actualCreator;
+        };
+        const PlayerCreatorBase *creator() const {
+            return m_actualCreator;
+        };
+
     public slots:
         // nastavi vytvarac podla indexu vo vectore NewGameDialog::creatorsList
         void setActualCreator(int);

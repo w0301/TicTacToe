@@ -14,10 +14,34 @@
 #ifndef PLAYERSIGN_H
 #define PLAYERSIGN_H
 
+#include <QList>
+#include <QPair>
 #include <QColor>
 #include <QPixmap>
 
-// abstraktny predok "podpisu" hraca na ploche
+class PlayerSign;
+
+// PlayerSignRegistrator class - registruje triedypodpisov
+class PlayerSignRegistrator {
+    public:
+        typedef PlayerSign *(*PlayerSignConstructor)();
+        typedef QList< QPair<bool, PlayerSignConstructor> > SignsList;
+
+        PlayerSignRegistrator(PlayerSignConstructor);
+
+        // registruje sign / vrati ich list
+        static void enable(PlayerSignConstructor cnt, bool val) {
+            sm_allSigns[sm_allSigns.indexOf(qMakePair(!val, cnt))].first = val;
+        };
+        static SignsList& list() {
+            return sm_allSigns;
+        };
+
+    private:
+        static SignsList sm_allSigns;
+};
+
+// PlayerSign class - abstraktny predok "podpisu" hraca na ploche
 class PlayerSign {
     public:
         PlayerSign() { } ;
@@ -30,6 +54,12 @@ class PlayerSign {
         // vytvori novy sign
         static PlayerSign* createSign() {
             return new PlayerSign;
+        };
+
+        // vrati true ked je podpis malovany rucne
+        // pre abstraktne je false
+        virtual bool isPainted() const {
+            return false;
         };
 };
 
@@ -55,6 +85,11 @@ class PaintedPlayerSign : public PlayerSign {
         };
 
         virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+
+        // vrati true ked je podpis malovany rucne
+        virtual bool isPainted() const {
+            return true;
+        };
 
         // vytvori novy sign
         static PlayerSign* createSign() {
@@ -82,6 +117,8 @@ class CirclePlayerSign : public PaintedPlayerSign {
             return new CirclePlayerSign;
         };
 
+    private:
+        static PlayerSignRegistrator sm_register;
 };
 
 // trieda pre nakreslenie krizika
@@ -100,6 +137,9 @@ class CrossPlayerSign : public PaintedPlayerSign {
         static PlayerSign* createSign() {
             return new CrossPlayerSign;
         };
+
+    private:
+        static PlayerSignRegistrator sm_register;
 };
 
 

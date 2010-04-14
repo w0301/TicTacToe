@@ -78,10 +78,12 @@ NewGameDialog::~NewGameDialog() {
 
 // vytvorenie novej hry
 void NewGameDialog::createNewGame() {
+    // naplni zoznam hracov
     QVector<Player*> players;
     players.reserve(m_playersCount->text().toInt());
-    players.push_back( new Player(new CrossPlayerSign(Qt::blue), "Wizard") );
-    players.push_back( new Player(new CirclePlayerSign(Qt::red), "Arcan") );
+    for(QVector<NewPlayerWidget*>::const_iterator i = m_newPlayerWidgets.begin(); i != m_newPlayerWidgets.end(); i++) {
+        players.push_back( (*i)->creator()->createPlayer() );
+    }
 
     emit newGameCreated(
        new Game(m_boardSize->value(), m_timeLimit->text().toInt()*1000, m_signsCountToWin->value(), players, NULL)
@@ -99,7 +101,7 @@ void NewGameDialog::addInitialPage() {
     playersCountLayout->addWidget( (m_playersCount = new QSpinBox) );
     m_playersCount->setValue(DEFAULT_PLAYERS_COUNT);
     // maximum bude pocet roznych podpisov
-    m_playersCount->setRange(MINIMUM_PLAYERS_COUNT, PlayerCreatorBase::signsList().size());
+    m_playersCount->setRange(MINIMUM_PLAYERS_COUNT, PlayerSignRegistrator::list().size());
 
     // velkost plochy
     QHBoxLayout *boardSizeLayout = new QHBoxLayout;
@@ -119,7 +121,6 @@ void NewGameDialog::addInitialPage() {
     QHBoxLayout *timeLimitLayout = new QHBoxLayout;
     timeLimitLayout->addWidget( new QLabel( tr("Time limit of player's turn in seconds (0 = unlimited): ") ) );
     timeLimitLayout->addWidget( (m_timeLimit = new QLineEdit( QString().setNum(DEFAULT_TIME_LIMIT) )) );
-
 
     // pridanie sub layoutoch do hlavneho layoutu
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
