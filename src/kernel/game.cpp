@@ -369,10 +369,11 @@ void Game::resetGame() {
     m_squareBoard.clear();
     setSquareBoardSize(squareBoardSize());
     setActualPlayerIndex(0);
+    m_isRunning = true;
     resetTimer();
 
-    // dame vediet ze doslo k zmene celej plochy
-    emit squareBoardUpdated(CLEAR, CLEAR);
+    emit gameStarted(actualPlayer());
+    emit playerChanged(actualPlayer());
 }
 
 // event handler timeru

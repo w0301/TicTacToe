@@ -88,6 +88,7 @@ void PlayerListFrame::fillList() {
     if(m_game == NULL) {
         return;
     }
+    m_playerList->clear();
     foreach(Player *i, m_game->players()) {
         m_playerList->addItem(i->name());
     }
@@ -141,41 +142,7 @@ MainWindow::MainWindow() :
     setWindowTitle( tr("TicTacToe") );
     setMinimumSize(505, 405);
 
-    /// vytvorenie hracej plochy
-    m_playBoard = new PlayBoard;
-    setCentralWidget(m_playBoard);
 
-    /// vytvorenie laveho docku
-    m_leftDock = new QDockWidget(this);
-    m_leftDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    m_leftDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-
-    // panel zobrazime iba ked bezi hra - pripojenie vo funkcii setGame
-    m_leftDock->hide();
-
-    // pomocny widget a layout
-    QWidget *leftDockWidgets = new QWidget(m_leftDock);
-    QVBoxLayout *leftDockLayout = new QVBoxLayout(leftDockWidgets);
-
-    // vytvorenie zobrazovaca casu
-    m_timeLimitFrame = new TimeLimitFrame(leftDockWidgets, 0);
-
-    // vytvorenie listu hracov
-    m_playerListFrame = new PlayerListFrame(leftDockWidgets);
-
-    // vytvorenie check boxu na pauzu
-    m_pauseCheckBox = new QCheckBox(tr("&Pause"), leftDockWidgets);
-
-    // pridanie do layoutu
-    leftDockLayout->addWidget(m_timeLimitFrame);
-    leftDockLayout->addWidget(m_playerListFrame);
-    leftDockLayout->addWidget(m_pauseCheckBox);
-
-    // nastavenie widgetu dockovacieho widgetu
-    m_leftDock->setWidget(leftDockWidgets);
-
-    // priradenie docku oknu
-    addDockWidget(Qt::LeftDockWidgetArea, m_leftDock);
 
     // vytvorenie menu
     QMenuBar *mainMenuBar = new QMenuBar(this);
@@ -200,25 +167,54 @@ void MainWindow::setGame(Game *game) {
     if(m_game != NULL) {
         m_game->setParent(this);
 
-        /// v prvom rade nastavenie hry hracej plochy
-        m_playBoard->setGame(m_game);
+        /// vytvorenie hracej plochy
+        m_playBoard = new PlayBoard(m_game, this);
+        setCentralWidget(m_playBoard);
 
-        /// potom nastavenie hry zobrazovaca hracov
-        m_playerListFrame->setGame(m_game);
+        /// vytvorenie laveho docku
+        m_leftDock = new QDockWidget(this);
+        m_leftDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        m_leftDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
-        /// dalej pripojenie signalov
+        // pomocny widget a layout
+        QWidget *leftDockWidgets = new QWidget(m_leftDock);
+        QVBoxLayout *leftDockLayout = new QVBoxLayout(leftDockWidgets);
+
+        /// vytvorenie zobrazovaca casu
+        m_timeLimitFrame = new TimeLimitFrame(leftDockWidgets, 0);
+
         // signal pre update casoveho limitu
         connect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit()));
         connect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit()));
         connect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
 
+        // vytvorenie listu hracov
+        m_playerListFrame = new PlayerListFrame(leftDockWidgets);
+        m_playerListFrame->setGame(m_game);
+
+        /// vytvorenie check boxu na pauzu
+        m_pauseCheckBox = new QCheckBox(tr("&Pause"), leftDockWidgets);
+
         // signali pre check box pauzi na docku
         connect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
         connect(m_game, SIGNAL(gamePaused(bool)), m_pauseCheckBox, SLOT(setChecked(bool)));
 
-        // signali pre zobrazenie/schovanie laveho docku
-        connect(m_game, SIGNAL(gameStarted(Player*)), m_leftDock, SLOT(show()));
-        connect(m_game, SIGNAL(gameStopped()), m_leftDock, SLOT(hide()));
+        // pridanie do layoutu
+        leftDockLayout->addWidget(m_timeLimitFrame);
+        leftDockLayout->addWidget(m_playerListFrame);
+        leftDockLayout->addWidget(m_pauseCheckBox);
+
+        // nastavenie widgetu dockovacieho widgetu
+        m_leftDock->setWidget(leftDockWidgets);
+
+        // priradenie docku oknu
+        addDockWidget(Qt::LeftDockWidgetArea, m_leftDock);
+
+        // signali pre zistenie vyhercu
+        connect(m_game, SIGNAL(playerWon(Player*)), this, SLOT(startWonWindow(Player*)));
+
+        // signali pre ukoncenie
+        connect(m_game, SIGNAL(gameStopped()), this, SLOT(unsetGame()));
 
         // spustime hru
         m_game->startGame();
@@ -228,18 +224,20 @@ void MainWindow::setGame(Game *game) {
 // zrusi aktulnu hru v okne
 void MainWindow::unsetGame() {
     if(m_game != NULL) {
-        /// odstranenie hry dalsich objektov
-        m_playBoard->unsetGame();
-        m_playerListFrame->unsetGame();
+        delete m_playBoard;
+        m_playBoard = NULL;
 
-        // odpojenie signalov
-        disconnect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit()));
-        disconnect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit()));
-        disconnect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
-        disconnect(m_pauseCheckBox, SIGNAL(clicked(bool)), m_game, SLOT(pauseGame(bool)));
-        disconnect(m_game, SIGNAL(gamePaused()), m_pauseCheckBox, SLOT(click()));
-        disconnect(m_game, SIGNAL(gameStarted(Player*)), m_leftDock, SLOT(show()));
-        disconnect(m_game, SIGNAL(gameStopped()), m_leftDock, SLOT(hide()));
+        delete m_pauseCheckBox;
+        m_pauseCheckBox = NULL;
+
+        delete m_playerListFrame;
+        m_playerListFrame = NULL;
+
+        delete m_timeLimitFrame;
+        m_timeLimitFrame = NULL;
+
+        delete m_leftDock;
+        m_leftDock = NULL;
 
         // a nakoniec zmazanie samotnej hry
         delete m_game;
@@ -253,4 +251,13 @@ void MainWindow::startNewGameDialog() {
     NewGameDialog newGameDlg(this);
     connect(&newGameDlg, SIGNAL(newGameCreated(Game*)), this, SLOT(setGame(Game*)));
     newGameDlg.exec();
+}
+
+// otvory mess. box ktory informuje o tom, ze vyhral hrac pl
+void MainWindow::startWonWindow(Player *pl) {
+    QMessageBox winBox(tr("Player won."), tr("Player '") + pl->name() + tr("' won the game."),
+                       QMessageBox::Information, QMessageBox::Ok, QMessageBox::Retry, QMessageBox::NoButton, this);
+    connect(winBox.button(QMessageBox::Retry), SIGNAL(clicked()), m_game, SLOT(resetGame()));
+    //connect(winBox.button(QMessageBox::Ok), SIGNAL(clicked()), this, SLOT(unsetGame()));
+    winBox.exec();
 }

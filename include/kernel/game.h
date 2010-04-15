@@ -80,7 +80,7 @@ class Game : public QObject {
         Game(int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES,
              const QVector<Player*>& = QVector<Player*>(), QObject* = NULL);
 
-        virtual ~Game() { };
+        ~Game() { };
 
         // zistenie a nastavenie hraca, ktory je na rade
         Player *incActualPlayer();
