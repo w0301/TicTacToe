@@ -47,11 +47,11 @@ void PlayBoard::setGame(Game *game) {
         connect(m_game, SIGNAL(playerProcessEnded()), this, SLOT(enableClick()));
 
         // prime signal o vyhre a zastavi plochu
-        connect(m_game, SIGNAL(playerWon(Player*)), this, SLOT(stopBoard()));
+        connect(m_game, SIGNAL(gameEnded(Player*)), this, SLOT(stopBoard()));
 
         // prime signaly o spusteni/zastaveni hry
         connect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(startBoard()));
-        connect(m_game, SIGNAL(gameStopped()), this, SLOT(stopBoard()));
+        connect(m_game, SIGNAL(gameEnded()), this, SLOT(stopBoard()));
 
         if(m_game->isRunning()) {
             startBoard();

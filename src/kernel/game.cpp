@@ -27,6 +27,10 @@ Game::Game(int size, int time, int toWin, const QVector<Player*>& players, QObje
     setPlayers(players);
 }
 
+Game::~Game() {
+
+}
+
 // nastavi novu velkost plochy hry - plocha je
 // zvacsena/zmensena a prvky su zachovane
 void Game::setSquareBoardSize(int size) {
@@ -36,11 +40,20 @@ void Game::setSquareBoardSize(int size) {
     }
 }
 
+// zamaze hracov
+void Game::unsetPlayers() {
+    foreach(Player *i, players()) {
+        delete i;
+    }
+    m_players.clear();
+}
+
 // nastaci novy vektor s hracmi - indikuje zaciatok hry
 void Game::setPlayers(const QVector<Player*>& players) {
     if(players.size() < 2) {
         return;
     }
+    unsetPlayers();
     m_players = players;
 
     // pripojime signal kazdeho hraca k slotu plochy a nastavime rodica
@@ -244,7 +257,7 @@ void Game::testWinner(int x, int y, Player *pl) {
             }
         }
         emit squareBoardUpdated();
-        emit playerWon(pl);
+        emit gameEnded(pl);
     }
 }
 
@@ -349,14 +362,13 @@ void Game::pauseGame(bool val) {
 void Game::stopGame() {
     m_squareBoard.clear();
     setSquareBoardSize(squareBoardSize());
-    m_players.clear();
-    setActualPlayerIndex(0);
+    unsetPlayers();
     m_isRunning = false;
 
     stopTimer();
 
     // posleme signaly
-    emit gameStopped();
+    emit gameEnded();
     emit squareBoardUpdated(CLEAR, CLEAR);
 }
 

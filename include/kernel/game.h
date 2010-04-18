@@ -80,7 +80,7 @@ class Game : public QObject {
         Game(int = DEFAULT_BOARD_SIZE, int = DEFAULT_TIME_LIMIT, int = DEFAULT_WIN_STONES,
              const QVector<Player*>& = QVector<Player*>(), QObject* = NULL);
 
-        ~Game() { };
+        ~Game();
 
         // zistenie a nastavenie hraca, ktory je na rade
         Player *incActualPlayer();
@@ -97,6 +97,7 @@ class Game : public QObject {
             return m_players;
         };
         void setPlayers(const QVector<Player*>&);
+        void unsetPlayers();
 
         // vrati vektor plochy a vrati a nastavi jeho velkost
         QVector< QVector<Square> >& squareBoard() {
@@ -159,7 +160,7 @@ class Game : public QObject {
     signals:
         // posle signal o tom, ze doslo k zmene na hracej ploche
         // ako parametre posle index zmeneneho stvorceka
-        // [-1, -1] signalizuje zmenu celej plochy, parameter Player
+        // [WHOLE, WHOLE] signalizuje zmenu celej plochy, parameter Player
         // je pouzity iba pri odosielani objektom hracov
         void squareBoardUpdated(int = WHOLE, int = WHOLE, Player* = NULL);
 
@@ -171,18 +172,13 @@ class Game : public QObject {
         // ako parameter posiela prveho hraca, kt. je aj na tahu
         void gameStarted(Player*);
 
-        // signal je poslany, ked je hra zastavena funkciou
-        // stopGame
-        void gameStopped();
+        // signal je poslany, ked hra skonci, ukazatel
+        // je poslany v pripade, ze je ukoncene v pripade vyhri hraca
+        void gameEnded(Player* = NULL);
 
         // posle sa ked bola hra pauznuta/odpauznuta
         void gamePaused(bool = true);
         void gameUnpaused();
-
-        // signal je poslany, ked nejaky hrac vyhra hru
-        // ako parameter posiela ukazatel na tohoto hraca
-        // a suradnice prveho a posledneho vytazneho kamena (v poli)
-        void playerWon(Player*);
 
         // signali su poslane na zaciatku/konci slotu processPlayer()
         // posielanie zabezpecuje to aby nedochadzalo k spracovaniu kliknuti

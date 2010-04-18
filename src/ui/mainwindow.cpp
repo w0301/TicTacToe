@@ -117,8 +117,8 @@ void PlayerListFrame::setGame(Game *game) {
         connect(m_game, SIGNAL(playerChanged(Player*)), this, SLOT(setActualPlayer(Player*)));
 
         // ked sa hra skonci musime vicistit list a label
-        connect(m_game, SIGNAL(gameStopped()), m_playerList, SLOT(clear()));
-        connect(m_game, SIGNAL(gameStopped()), m_actuPlayerName, SLOT(clear()));
+        connect(m_game, SIGNAL(gameEnded()), m_playerList, SLOT(clear()));
+        connect(m_game, SIGNAL(gameEnded()), m_actuPlayerName, SLOT(clear()));
     }
 }
 
@@ -126,8 +126,8 @@ void PlayerListFrame::unsetGame() {
     if(m_game != NULL) {
         disconnect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(fillList()));
         disconnect(m_game, SIGNAL(playerChanged(Player*)), this, SLOT(setActualPlayer(Player*)));
-        disconnect(m_game, SIGNAL(gameStopped()), m_playerList, SLOT(clear()));
-        disconnect(m_game, SIGNAL(gameStopped()), m_actuPlayerName, SLOT(clear()));
+        disconnect(m_game, SIGNAL(gameEnded()), m_playerList, SLOT(clear()));
+        disconnect(m_game, SIGNAL(gameEnded()), m_actuPlayerName, SLOT(clear()));
 
         m_game = NULL;
         m_playerList->clear();
@@ -137,12 +137,10 @@ void PlayerListFrame::unsetGame() {
 // MainWindow class
 MainWindow::MainWindow() :
         QMainWindow(NULL), m_game(NULL), m_playBoard(NULL), m_timeLimitFrame(NULL),
-        m_leftDock(NULL) {
+        m_playerListFrame(NULL), m_pauseCheckBox(NULL), m_leftDock(NULL) {
     /// nastavenie defaultnych hodnot
     setWindowTitle( tr("TicTacToe") );
     setMinimumSize(505, 405);
-
-
 
     // vytvorenie menu
     QMenuBar *mainMenuBar = new QMenuBar(this);
@@ -151,8 +149,12 @@ MainWindow::MainWindow() :
     // menu s polozkami pre ovladanie hry
     QMenu *gameMenu = new QMenu(tr("&Game"), mainMenuBar);
     QAction *newGameAction = gameMenu->addAction( tr("&New game...") );
-    mainMenuBar->addMenu(gameMenu);
     connect(newGameAction, SIGNAL(triggered()), this, SLOT(startNewGameDialog()));
+
+    QAction *stopGameAction = gameMenu->addAction( tr("&Stop game") );
+    connect(stopGameAction, SIGNAL(triggered()), this, SLOT(unsetGame()));
+
+    mainMenuBar->addMenu(gameMenu);
 }
 
 MainWindow::~MainWindow() {
@@ -185,7 +187,6 @@ void MainWindow::setGame(Game *game) {
 
         // signal pre update casoveho limitu
         connect(m_game, SIGNAL(gameStarted(Player*)), m_timeLimitFrame, SLOT(resetTimeLimit()));
-        connect(m_game, SIGNAL(gameStopped()), m_timeLimitFrame, SLOT(resetTimeLimit()));
         connect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
 
         // vytvorenie listu hracov
@@ -211,10 +212,7 @@ void MainWindow::setGame(Game *game) {
         addDockWidget(Qt::LeftDockWidgetArea, m_leftDock);
 
         // signali pre zistenie vyhercu
-        connect(m_game, SIGNAL(playerWon(Player*)), this, SLOT(startWonWindow(Player*)));
-
-        // signali pre ukoncenie
-        connect(m_game, SIGNAL(gameStopped()), this, SLOT(unsetGame()));
+        connect(m_game, SIGNAL(gameEnded(Player*)), this, SLOT(startWonWindow(Player*)));
 
         // spustime hru
         m_game->startGame();
@@ -258,6 +256,9 @@ void MainWindow::startWonWindow(Player *pl) {
     QMessageBox winBox(tr("Player won."), tr("Player '") + pl->name() + tr("' won the game."),
                        QMessageBox::Information, QMessageBox::Ok, QMessageBox::Retry, QMessageBox::NoButton, this);
     connect(winBox.button(QMessageBox::Retry), SIGNAL(clicked()), m_game, SLOT(resetGame()));
-    //connect(winBox.button(QMessageBox::Ok), SIGNAL(clicked()), this, SLOT(unsetGame()));
+
+    // queued pripojenie kvoli tomu ze v stoku zostali nejake nedorucene singali, ktore by sposobili
+    // pad aplikaci - qt by to malo nejako vyriesit :)
+    connect(winBox.button(QMessageBox::Ok), SIGNAL(clicked()), this, SLOT(unsetGame()), Qt::QueuedConnection);
     winBox.exec();
 }
