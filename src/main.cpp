@@ -23,7 +23,16 @@ int main(int argc, char *argv[]) {
 
     // nastavenie translatoru pre program - TODO: opravit tak aby to fungovala aj po instalacii na linux
     QTranslator translator;
-    translator.load( QString("tictactoe_") + QLocale::system().name(), "../translations" );
+    QString trFileName = QString("tictactoe_") + QLocale::system().name();
+
+    // pokusime sa loadnut subor s prekladom
+    if( !translator.load(trFileName, "./translations" ) ) {
+        if( !translator.load(trFileName, "/usr/share/TicTacToe/translations" ) ) {
+            if( !translator.load(trFileName, "/usr/local/share/TicTacToe/translations" ) ) {
+                translator.load(trFileName, "../translations" );
+            }
+        }
+    }
     app.installTranslator(&translator);
 
     MainWindow window;
