@@ -36,8 +36,9 @@ PlayerCreator::PlayerCreator(QWidget *parent) :
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
     /// pridanie widgetov do layoutu
-    // edit pre meno
-    mainLayout->addWidget( ( m_nameEdit = new QLineEdit( tr("Name of player") ) ) );
+    // edit pre meno a jeho label
+    mainLayout->addWidget( new QLabel( tr("Name of player: ") ) );
+    mainLayout->addWidget( (m_nameEdit = new QLineEdit) );
 
     // button na spustenie dialogu pre vyber farby
     QPixmap buttCol(16, 16);
@@ -70,7 +71,10 @@ Player* PlayerCreator::createPlayer() {
 
 // sloty
 void PlayerCreator::refreshSignTypes() {
-    // najprv musime list vycistit
+    // najprv ulozenie indexu
+    int index = m_signType->currentIndex();
+
+    // potom vycistenie listu
     m_signType->clear();
 
     // a potom ho prislusne naplnime
@@ -83,6 +87,9 @@ void PlayerCreator::refreshSignTypes() {
         m_signType->addItem(QIcon(sign->signPixmap(NULL, QPoint(0, 0), 16)), "");
         delete sign;
     }
+
+    // a na koniec obnovenie indexu
+    m_signType->setCurrentIndex(index);
 }
 
 void PlayerCreator::startColorDialog() {

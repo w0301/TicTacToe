@@ -30,6 +30,7 @@ class QLineEdit;
 class QComboBox;
 class QWizardPage;
 class QVBoxLayout;
+class QScrollArea;
 
 // NewPlayerWidget class
 class NewPlayerWidget : public QWidget {
@@ -99,6 +100,8 @@ class NewGameDialog : public QWizard {
 
         // 2. strana a jej widgety
         QWizardPage *m_playersPage;
+        QScrollArea *m_scrollArea;
+        QWidget *m_scrollWidget;
         QVector<NewPlayerWidget*> m_newPlayerWidgets;
 };
 

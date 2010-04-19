@@ -61,7 +61,8 @@ void NewPlayerWidget::setActualCreator(int i) {
 // NewGameDialog class
 NewGameDialog::NewGameDialog(QWidget *parent) :
         QWizard(parent), m_playersCount(NULL), m_signsCountToWin(NULL),
-        m_boardSize(NULL), m_timeLimit(NULL), m_playersPage(NULL) {
+        m_boardSize(NULL), m_timeLimit(NULL), m_playersPage(NULL),
+        m_scrollArea(NULL), m_scrollWidget(NULL) {
     addInitialPage();
     addPlayersPage();
 
@@ -104,7 +105,7 @@ void NewGameDialog::createNewGame() {
 
 // vytvaranie stran
 void NewGameDialog::addInitialPage() {
-    QWizardPage *newPage = new QWizardPage;
+    QWizardPage *newPage = new QWizardPage(this);
     newPage->setTitle( tr("Main settings") );
 
     // pocet hracov
@@ -135,7 +136,7 @@ void NewGameDialog::addInitialPage() {
     timeLimitLayout->addWidget( (m_timeLimit = new QLineEdit( QString().setNum(DEFAULT_TIME_LIMIT) )) );
 
     // pridanie sub layoutoch do hlavneho layoutu
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addLayout(playersCountLayout);
     mainLayout->addLayout(signsCountToWinLayout);
     mainLayout->addLayout(boardSizeLayout);
@@ -148,15 +149,22 @@ void NewGameDialog::addInitialPage() {
 
 void NewGameDialog::addPlayersPage() {
     // vitvorenie novej strany
-    m_playersPage = new QWizardPage;
+    m_playersPage = new QWizardPage(this);
     m_playersPage->setTitle( tr("Players") );
-
-    // vytvorenie layoutu
     QVBoxLayout *mainLayout = new QVBoxLayout(m_playersPage);
+    mainLayout->addWidget( (m_scrollArea = new QScrollArea) );
 
-    // nastavenie layoutu a navrat funkcie
+    // pridanie strany do dialogu
     m_playersPage->setLayout(mainLayout);
     addPage(m_playersPage);
+
+    // vytvorenie widgetu, nad ktorym bude pracovat skrolovaci widget
+    m_scrollWidget = new QWidget;
+    m_scrollWidget->setLayout( new QVBoxLayout );
+    m_scrollWidget->layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    // nastavenie widgetu ktory sa bude skrolovat
+    m_scrollArea->setWidget(m_scrollWidget);
 }
 
 void NewGameDialog::fillPlayersPage(int i) {
@@ -176,8 +184,9 @@ void NewGameDialog::fillPlayersPage(int i) {
         // vytvorime novy widget a pripojime ho tak aby sme vedeli ci
         // su vsetky konflikty podpisov vyriesene
         NewPlayerWidget *newWidget = new NewPlayerWidget;
+        newWidget->show();
 
-        m_playersPage->layout()->addWidget(newWidget);
+        m_scrollWidget->layout()->addWidget(newWidget);        
         m_newPlayerWidgets[i] = newWidget;
     }
 }
