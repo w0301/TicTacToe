@@ -154,6 +154,12 @@ MainWindow::MainWindow() :
     QAction *stopGameAction = gameMenu->addAction( tr("&Stop game") );
     connect(stopGameAction, SIGNAL(triggered()), this, SLOT(unsetGame()));
 
+    gameMenu->addSeparator();
+
+    QAction *quitAction = gameMenu->addAction( tr("E&xit") );
+    connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
+
+    // pridanie menu baru
     mainMenuBar->addMenu(gameMenu);
 }
 
