@@ -136,3 +136,73 @@ QPixmap CrossPlayerSign::signPixmap(const QWidget *board, QPoint startAt, int si
 
     return ret;
 }
+
+//| TrinaglePlayerSign class
+PlayerSignRegistrator TrinaglePlayerSign::sm_register(&TrinaglePlayerSign::createSign);
+
+TrinaglePlayerSign::TrinaglePlayerSign(const QColor& col) :
+        PaintedPlayerSign(col) {
+
+}
+
+TrinaglePlayerSign::TrinaglePlayerSign(const TrinaglePlayerSign& from) :
+        PaintedPlayerSign(from) {
+
+}
+
+TrinaglePlayerSign& TrinaglePlayerSign::operator= (const TrinaglePlayerSign& from) {
+    PaintedPlayerSign::operator= (from);
+    return *this;
+}
+
+QPixmap TrinaglePlayerSign::signPixmap(const QWidget *board, QPoint startAt, int size) {
+    // nastavenie kresliacej plochy
+    QPixmap ret = PaintedPlayerSign::signPixmap(board, startAt, size);
+    QPainter painter(&ret);
+    QPen newPen(color());
+    newPen.setWidth(3);
+    painter.setPen(newPen);
+
+    /// nakresli trojuholnik na stvorcek
+    // lava strana
+    painter.drawLine(0, size, size / 2, 0);
+    // prava strana
+    painter.drawLine(size, size, size / 2, 0);
+    // zakladna
+    painter.drawLine(0, size, size, size);
+
+    return ret;
+}
+
+//| SquarePlayerSign class
+PlayerSignRegistrator SquarePlayerSign::sm_register(&SquarePlayerSign::createSign);
+
+SquarePlayerSign::SquarePlayerSign(const QColor& col) :
+        PaintedPlayerSign(col) {
+
+}
+
+SquarePlayerSign::SquarePlayerSign(const SquarePlayerSign& from) :
+        PaintedPlayerSign(from) {
+
+}
+
+SquarePlayerSign& SquarePlayerSign::operator= (const SquarePlayerSign& from) {
+    PaintedPlayerSign::operator= (from);
+    return *this;
+}
+
+QPixmap SquarePlayerSign::signPixmap(const QWidget *board, QPoint startAt, int size) {
+    // nastavenie kresliacej plochy
+    QPixmap ret = PaintedPlayerSign::signPixmap(board, startAt, size);
+    QPainter painter(&ret);
+    QPen newPen(color());
+    newPen.setWidth(3);
+    painter.setPen(newPen);
+
+    /// nakresli stvorcek na stvorcek
+    int padd = size / 4;
+    painter.drawRect(0 + padd, 0 + padd, size - (2*padd), size - (2*padd));
+
+    return ret;
+}

@@ -151,5 +151,46 @@ class CrossPlayerSign : public PaintedPlayerSign {
         static PlayerSignRegistrator sm_register;
 };
 
+// trieda pre nakreslenie trojuholnika
+class TrinaglePlayerSign : public PaintedPlayerSign {
+    public:
+        TrinaglePlayerSign() { };
+        TrinaglePlayerSign(const QColor&);
+        TrinaglePlayerSign(const TrinaglePlayerSign&);
+        virtual ~TrinaglePlayerSign() { } ;
+
+        TrinaglePlayerSign& operator= (const TrinaglePlayerSign&);
+
+        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+
+        // vytvori novy sign
+        static PlayerSign* createSign() {
+            return new TrinaglePlayerSign;
+        };
+
+    private:
+        static PlayerSignRegistrator sm_register;
+};
+
+// trieda pre nakreslenie stvorceka
+class SquarePlayerSign : public PaintedPlayerSign {
+    public:
+        SquarePlayerSign() { };
+        SquarePlayerSign(const QColor&);
+        SquarePlayerSign(const SquarePlayerSign&);
+        virtual ~SquarePlayerSign() { } ;
+
+        SquarePlayerSign& operator= (const SquarePlayerSign&);
+
+        virtual QPixmap signPixmap(const QWidget*, QPoint, int);
+
+        // vytvori novy sign
+        static PlayerSign* createSign() {
+            return new SquarePlayerSign;
+        };
+
+    private:
+        static PlayerSignRegistrator sm_register;
+};
 
 #endif // PLAYERSIGN_H
