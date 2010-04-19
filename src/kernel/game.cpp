@@ -302,7 +302,7 @@ void Game::resetTimer(int l) {
         m_lastTime.start();
         if(m_timerID == -1) {
             m_timerID = startTimer(500);
-            connect(this, SIGNAL(playerWon(Player*)), this, SLOT(stopTimer()));
+            connect(this, SIGNAL(gameEnded(Player*)), this, SLOT(stopTimer()));
             connect(this, SIGNAL(playerChanged(Player*)), this, SLOT(resetTimer()));
         }
     }
@@ -312,7 +312,7 @@ void Game::resetTimer(int l) {
 void Game::stopTimer() {
     if(m_timerID != -1) {
         killTimer(m_timerID);
-        disconnect(this, SIGNAL(playerWon(Player*)), this, SLOT(stopTimer()));
+        disconnect(this, SIGNAL(gameEnded(Player*)), this, SLOT(stopTimer()));
         disconnect(this, SIGNAL(playerChanged(Player*)), this, SLOT(resetTimer()));
         m_timerID = -1;
     }

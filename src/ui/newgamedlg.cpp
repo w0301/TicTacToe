@@ -28,7 +28,7 @@ NewPlayerWidget::NewPlayerWidget(QWidget *parent) :
     PlayerCreatorRegistrator::PlayerCreatorsList& list = PlayerCreatorRegistrator::list();
     m_playerCreators = new QComboBox(this);
     for(PlayerCreatorRegistrator::PlayerCreatorsList::const_iterator i = list.begin(); i != list.end(); i++) {
-        m_playerCreators->addItem(i->first);
+        m_playerCreators->addItem( QApplication::translate( "QObject", (i->first).toUtf8() ) );
     }
     // nastavenie aktualenho indexu a postaranie sa o to aby sa pri zmene signalu zmenil
     // aj vytvarac

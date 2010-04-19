@@ -12,6 +12,81 @@
         <source>&amp;Pause</source>
         <translation>&amp;Pauza</translation>
     </message>
+    <message>
+        <source>&amp;Game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;New game...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Stop game</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>E&amp;xit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Player won.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Player &apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&apos; won the game.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>NewGameDialog</name>
+    <message>
+        <source>Signs conflict!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>It&apos;s not possible to have same sign
+for more players.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Players count: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of squares in board side: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of signs to win: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Time limit of player&apos;s turn in seconds (0 = unlimited): </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Players</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PlayerCreator</name>
+    <message>
+        <source>Name of player: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local player</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PlayerListFrame</name>
