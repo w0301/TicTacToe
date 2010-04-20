@@ -35,6 +35,12 @@ configure_file(
 
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
+# pridanie targetu pre generovanie .ts suborov
+add_custom_target(generatets "${QT_LUPDATE_EXECUTABLE}" ${SRC_FILES} ${MOC_FILES} -ts ${TS_FILES})
+
+# pridanie tagetu pre vytvorenie .qm suborov z .ts suborov
+add_custom_target(generateqm "${QT_LRELEASE_EXECUTABLE}" ${TS_FILES} -qm ${QM_FILES})
+
 # vytvorenie konfiguracneho include suboru pre projekt
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/config.h.in"
 			   "${CMAKE_CURRENT_SOURCE_DIR}/include/config.h")
