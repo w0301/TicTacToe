@@ -25,6 +25,7 @@ set(MOC_FILES include/main.h include/kernel/game.h include/kernel/player.h inclu
 
 set(TS_FILES translations/tictactoe_sk.ts)
 set(QM_FILES translations/tictactoe_sk.qm)
+set(ARTS_FILES arts/icon.png)
 
 # sprovozdnenie uninstall targetu
 configure_file(
@@ -50,4 +51,5 @@ target_link_libraries(${FINAL_EXE} ${QT_LIBRARIES})
 # instalacne prikazy - execko a subory jazyka
 install(TARGETS ${FINAL_EXE} DESTINATION bin)
 install(FILES ${QM_FILES} DESTINATION share/TicTacToe/translations)
+install(FILES ${ARTS_FILES} DESTINATION share/TicTacToe/arts)
 
