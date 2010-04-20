@@ -148,6 +148,8 @@ MainWindow::MainWindow() :
 
     // menu s polozkami pre ovladanie hry
     QMenu *gameMenu = new QMenu(tr("&Game"), mainMenuBar);
+    mainMenuBar->addMenu(gameMenu);
+
     QAction *newGameAction = gameMenu->addAction( tr("&New game...") );
     connect(newGameAction, SIGNAL(triggered()), this, SLOT(startNewGameDialog()));
 
@@ -159,8 +161,12 @@ MainWindow::MainWindow() :
     QAction *quitAction = gameMenu->addAction( tr("E&xit") );
     connect(quitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-    // pridanie menu baru
-    mainMenuBar->addMenu(gameMenu);
+    // help menu
+    QMenu *helpMenu = new QMenu(tr("&Help"), mainMenuBar);
+    mainMenuBar->addMenu(helpMenu);
+
+    QAction *aboutAction = helpMenu->addAction( tr("&About...") );
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(startAboutWindow()));
 }
 
 MainWindow::~MainWindow() {
@@ -268,3 +274,13 @@ void MainWindow::startWonWindow(Player *pl) {
     connect(winBox.button(QMessageBox::Ok), SIGNAL(clicked()), this, SLOT(unsetGame()), Qt::QueuedConnection);
     winBox.exec();
 }
+
+// otvory mess. box s about spravov
+void MainWindow::startAboutWindow() {
+    QString message;
+    message += QString(tr("<h1>TicTacToe %1.%2.%3</h1>\n\n")).arg(MAJOR_VERSION).arg(MINOR_VERSION).arg(MAINTENANCE_VERSION)
+            += QString(trUtf8("<p>Copyright © 2010 Richard Kakaš</p>"))  ;
+
+    QMessageBox::about(this, tr("About TicTacToe"), message);
+}
+

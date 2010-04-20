@@ -109,6 +109,7 @@ class MainWindow : public QMainWindow {
         void unsetGame();
         void startNewGameDialog();
         void startWonWindow(Player*);
+        void startAboutWindow();
 
     private:
         // hra pre okno

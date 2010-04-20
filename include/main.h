@@ -14,6 +14,9 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+// includovanie suboru s build konfiguraciou
+#include "config.h"
+
 #define DEFAULT_PLAYERS_COUNT 2
 #define DEFAULT_BOARD_SIZE 20
 #define DEFAULT_WIN_STONES 5

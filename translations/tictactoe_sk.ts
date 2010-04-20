@@ -6,7 +6,7 @@
     <name>MainWindow</name>
     <message>
         <source>TicTacToe</source>
-        <translation>Piškvorky</translation>
+        <translation></translation>
     </message>
     <message>
         <source>&amp;Pause</source>
@@ -14,78 +14,96 @@
     </message>
     <message>
         <source>&amp;Game</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Hra</translation>
     </message>
     <message>
         <source>&amp;New game...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nová hra...</translation>
     </message>
     <message>
         <source>&amp;Stop game</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Zastaviť hru</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Koniec</translation>
     </message>
     <message>
         <source>Player won.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hráč vyhral.</translation>
     </message>
     <message>
         <source>Player &apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Hráč &apos;</translation>
     </message>
     <message>
         <source>&apos; won the game.</source>
-        <translation type="unfinished"></translation>
+        <translation>&apos; vyhral hru.</translation>
+    </message>
+    <message>
+        <source>&amp;Help</source>
+        <translation>&amp;Pomoc</translation>
+    </message>
+    <message>
+        <source>&amp;About...</source>
+        <translation>&amp;O hre...</translation>
+    </message>
+    <message>
+        <source>&lt;h1&gt;TicTacToe %1.%2.%3&lt;/h1&gt;
+
+</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Copyright © 2010 Richard Kakaš&lt;/p&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>About TicTacToe</source>
+        <translation>O TicTacToe</translation>
     </message>
 </context>
 <context>
     <name>NewGameDialog</name>
     <message>
         <source>Signs conflict!</source>
-        <translation type="unfinished"></translation>
+        <translation>Konflikt podpisov!</translation>
     </message>
     <message>
         <source>It&apos;s not possible to have same sign
 for more players.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieje možné aby mali dvaja hráči rovnaký podpis.</translation>
     </message>
     <message>
         <source>Main settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Hlavné nastavenia</translation>
     </message>
     <message>
         <source>Players count: </source>
-        <translation type="unfinished"></translation>
+        <translation>Počet hráčov:</translation>
     </message>
     <message>
         <source>Number of squares in board side: </source>
-        <translation type="unfinished"></translation>
+        <translation>Počet štvorčekov na strane:</translation>
     </message>
     <message>
         <source>Number of signs to win: </source>
-        <translation type="unfinished"></translation>
+        <translation>Počet podpsiov v rade na výhru:</translation>
     </message>
     <message>
         <source>Time limit of player&apos;s turn in seconds (0 = unlimited): </source>
-        <translation type="unfinished"></translation>
+        <translation>Časový limit na ťah (0 = neobmedzený):</translation>
     </message>
     <message>
         <source>Players</source>
-        <translation type="unfinished"></translation>
+        <translation>Hráči</translation>
     </message>
 </context>
 <context>
     <name>PlayerCreator</name>
     <message>
         <source>Name of player: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Local player</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>

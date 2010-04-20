@@ -1,14 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(TicTacToe)
 
-# sprovozdnenie uninstall targetu
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
-
-add_custom_target(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+# verzia projektu
+set(MAJOR_VERSION 0)
+set(MINOR_VERSION 0)
+set(MAINTENANCE_VERSION 0)
 
 # nazov vysledneho suboru
 set(FINAL_EXE "bin/TicTacToe")
@@ -29,6 +25,20 @@ set(MOC_FILES include/main.h include/kernel/game.h include/kernel/player.h inclu
 
 set(TS_FILES translations/tictactoe_sk.ts)
 set(QM_FILES translations/tictactoe_sk.qm)
+
+# sprovozdnenie uninstall targetu
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  IMMEDIATE @ONLY)
+
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+
+# vytvorenie konfiguracneho include suboru pre projekt
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/config.h.in"
+			   "${CMAKE_CURRENT_SOURCE_DIR}/include/config.h")
+
+
 
 # vytvori moc subory
 qt_wrap_cpp(${FINAL_EXE} MOC_SRC_FILES ${MOC_FILES})
