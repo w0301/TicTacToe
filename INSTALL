@@ -1,0 +1,22 @@
+Steps to build and install TicTacToe:
+	1. Navigate to source directory:
+		$ cd "TicTacToe_directory"
+	2. Run cmake (-D is optional):
+		$ cmake -D OPTION=VALUE .
+
+		Avaible options are:
+			- DEBUG={ON,OFF} - enable debug informations in code. (default = OFF)
+	3. Run make:
+		$ make TARGET
+
+		Avaible targets are:
+			- all - build everything necessary to run TicTacToe (default target)
+			- install - install all necessary files to system directories (UNIX - /usr/local/, WINDOWS - C:\Program Files\TicTacToe\)
+			- uninstall - uninstall all installed files
+			- generatets - generate .ts files described in variable "TS_FILES" in CMakeLists.txt file
+			- generateqm - generate .qm files from all .ts files
+
+		For ordinary mortals this is enough to make it works:
+			$ make all
+			$ sudo make install
+

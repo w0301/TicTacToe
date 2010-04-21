@@ -1,6 +1,9 @@
+#ifndef CONFIG_H
+#define CONFIG_H
 
 // definovanie verzie projektu
 #define MAJOR_VERSION @MAJOR_VERSION@
 #define MINOR_VERSION @MINOR_VERSION@
 #define MAINTENANCE_VERSION @MAINTENANCE_VERSION@
 
+#endif // CONFIG_H
