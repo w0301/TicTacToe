@@ -34,11 +34,11 @@
     </message>
     <message>
         <source>Player &apos;</source>
-        <translation>Hráč &apos;</translation>
+        <translation type="obsolete">Hráč &apos;</translation>
     </message>
     <message>
         <source>&apos; won the game.</source>
-        <translation>&apos; vyhral hru.</translation>
+        <translation type="obsolete">&apos; vyhral hru.</translation>
     </message>
     <message>
         <source>&amp;Help</source>
@@ -61,6 +61,10 @@
     <message>
         <source>About TicTacToe</source>
         <translation>O TicTacToe</translation>
+    </message>
+    <message>
+        <source>Player &apos;%1&apos; won the game.</source>
+        <translation>Hráč &apos;%1&apos; vyhral hru.</translation>
     </message>
 </context>
 <context>
@@ -103,7 +107,7 @@ for more players.</source>
     <name>PlayerCreator</name>
     <message>
         <source>Name of player: </source>
-        <translation></translation>
+        <translation>Meno hráča:</translation>
     </message>
 </context>
 <context>
@@ -118,6 +122,13 @@ for more players.</source>
     <message>
         <source>Sign of player</source>
         <translation>Hráčov podpis</translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <source>Local player</source>
+        <translation>Lokálny hráč</translation>
     </message>
 </context>
 <context>

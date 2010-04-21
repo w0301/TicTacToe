@@ -27,7 +27,7 @@ PlayerCreatorRegistrator::PlayerCreatorRegistrator(const QString& name, PlayerCr
 }
 
 // PlayerCreator
-PlayerCreatorRegistrator PlayerCreator::sm_register("Local player", &PlayerCreator::createCreator);
+PlayerCreatorRegistrator PlayerCreator::sm_register(QObject::tr("Local player"), &PlayerCreator::createCreator);
 
 PlayerCreator::PlayerCreator(QWidget *parent) :
         PlayerCreatorBase(parent), m_nameEdit(NULL), m_signType(NULL), m_colorButton(NULL),

@@ -265,7 +265,7 @@ void MainWindow::startNewGameDialog() {
 
 // otvory mess. box ktory informuje o tom, ze vyhral hrac pl
 void MainWindow::startWonWindow(Player *pl) {
-    QMessageBox winBox(tr("Player won."), tr("Player '") + pl->name() + tr("' won the game."),
+    QMessageBox winBox(tr("Player won."), QString(tr("Player '%1' won the game.")).arg(pl->name()),
                        QMessageBox::Information, QMessageBox::Ok, QMessageBox::Retry, QMessageBox::NoButton, this);
     connect(winBox.button(QMessageBox::Retry), SIGNAL(clicked()), m_game, SLOT(resetGame()));
 
