@@ -79,7 +79,6 @@ add_dependencies(${FINAL_EXE} make_target_dir)
 
 # instalacne prikazy - rozne na unixe a windowse!
 if(UNIX)
-	set(CMAKE_INSTALL_PREFIX "")
 	install(TARGETS ${FINAL_EXE} DESTINATION bin)
 	install(DIRECTORY ./translations DESTINATION share/TicTacToe FILES_MATCHING PATTERN "*.qm")
 	install(FILES ${ARTS_FILES} DESTINATION share/TicTacToe/arts)

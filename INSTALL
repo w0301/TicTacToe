@@ -2,7 +2,7 @@ Necessary software to build TicTacToe:
 	qt cmake
 
 Necessary software to run TicTacToe:
-	qt cmake
+	qt
 
 Steps to build and install TicTacToe:
 	1. Navigate to source directory:
@@ -12,12 +12,13 @@ Steps to build and install TicTacToe:
 
 		Avaible options are:
 			- DEBUG={ON,OFF} - enable debug informations in code. (default = OFF)
+			- CMAKE_INSTALL_PREFIX=/prefix/path - change prefix of installation (deafault = UNIX - /usr/local, WINDOWS - C:\Program Files\)
 	3. Run make:
 		$ make TARGET
 
 		Avaible targets are:
 			- all - build everything necessary to run TicTacToe (default target)
-			- install - install all necessary files to system directories (UNIX - /usr/local/, WINDOWS - C:\Program Files\TicTacToe\)
+			- install - install all necessary files to system directories prefixed by CMAKE_INSTALL_PREFIX
 			- uninstall - uninstall all installed files
 			- generatets - generate .ts files described in variable "TS_FILES" in CMakeLists.txt file
 			- generateqm - generate .qm files from all .ts files
