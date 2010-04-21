@@ -1,3 +1,9 @@
+Necessary software to build TicTacToe:
+	qt cmake
+
+Necessary software to run TicTacToe:
+	qt cmake
+
 Steps to build and install TicTacToe:
 	1. Navigate to source directory:
 		$ cd "TicTacToe_directory"
