@@ -35,11 +35,18 @@ set(SRC_FILES src/main.cpp src/kernel/game.cpp src/kernel/player.cpp src/ui/main
 set(MOC_FILES include/main.h include/kernel/game.h include/kernel/player.h include/ui/mainwindow.h 
 			  include/ui/newgamedlg.h include/ui/playboard.h include/ui/playercreator.h include/ui/playersign.h)
 
+
 set(TS_FILES translations/tictactoe_sk.ts)
 # QM_FILES - automaticky generovane z TS_FILES
 set(ICON_FILE arts/TicTacToe.png)
 set(ARTS_FILES arts/icon.png)
 set(DESKTOP_FILE desktop/TicTacToe.desktop)
+set(RC_FILE desktop/win32_res.rc)
+
+# prilinkovanie .rc suboru - kvoli ikone
+if(WIN32)
+	set(SRC_FILES ${SRC_FILES} ${RC_FILE})
+endif(WIN32)
 
 # sprovozdnenie uninstall targetu
 configure_file(
@@ -73,7 +80,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/config.h.in"
 qt_wrap_cpp(${FINAL_EXE} MOC_SRC_FILES ${MOC_FILES})
 
 # vytvorenie execka
-add_executable(${FINAL_EXE} ${SRC_FILES} ${MOC_SRC_FILES})
+add_executable(${FINAL_EXE} WIN32 ${SRC_FILES} ${MOC_SRC_FILES})
 target_link_libraries(${FINAL_EXE} ${QT_LIBRARIES})
 add_dependencies(${FINAL_EXE} make_target_dir)
 
@@ -85,8 +92,8 @@ if(UNIX)
 	install(FILES ${ICON_FILE} DESTINATION share/pixmaps)
 	install(FILES ${DESKTOP_FILE} DESTINATION share/applications)
 else(NOT UNIX)
-	install(TARGETS ${FINAL_EXE} DESTINATION TicTacToe)
-	install(DIRECTORY ./translations/ DESTINATION TicTacToe FILES_MATCHING PATTERN "*.qm")
-	install(FILES ${ARTS_FILES} DESTINATION TicTacToe/arts)
+	install(TARGETS ${FINAL_EXE} DESTINATION ./)
+	install(DIRECTORY ./translations/ DESTINATION ./translations FILES_MATCHING PATTERN "*.qm")
+	install(FILES ${ARTS_FILES} DESTINATION ./arts)
 endif(UNIX)
 
