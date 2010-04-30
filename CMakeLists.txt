@@ -16,32 +16,37 @@ set(FINAL_EXE "${FINAL_PATH}/TicTacToe")
 find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
 
-# sprava debug/release buildu - defaultne je debug off
-option(DEBUG "Enable debug informations in built code." OFF)
-if(DEBUG)
-	add_definitions(-g)
-else(NOT DEBUG)
-	add_definitions(-O2)
-	#set_property(GLOBAL PROPERTY LINK_FLAGS -s)
-endif(DEBUG)
+# sprava build modiv - defaultny je release
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING
+        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+        FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
 
 # kde sa maju hladat hlavicky
-include_directories("include/")
+include_directories("include/" "${CMAKE_CURRENT_BINARY_DIR}/include/")
 
 # nastavenie suborov na spracovanie
-set(SRC_FILES src/main.cpp src/kernel/game.cpp src/kernel/player.cpp src/ui/mainwindow.cpp 
-			  src/ui/newgamedlg.cpp src/ui/playboard.cpp src/ui/playercreator.cpp src/ui/playersign.cpp)
+set(SRC_FILES 
+	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel/game.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel/player.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/mainwindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/ui/newgamedlg.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/playboard.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/ui/playercreator.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/playersign.cpp
+)
 
-set(MOC_FILES include/main.h include/kernel/game.h include/kernel/player.h include/ui/mainwindow.h 
-			  include/ui/newgamedlg.h include/ui/playboard.h include/ui/playercreator.h include/ui/playersign.h)
+set(MOC_FILES 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/main.h ${CMAKE_CURRENT_SOURCE_DIR}/include/kernel/game.h 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/kernel/player.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/mainwindow.h 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/ui/newgamedlg.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/playboard.h 
+	${CMAKE_CURRENT_SOURCE_DIR}/include/ui/playercreator.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/playersign.h
+)
 
-
-set(TS_FILES translations/tictactoe_sk.ts)
+set(TS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/translations/tictactoe_sk.ts)
 # QM_FILES - automaticky generovane z TS_FILES
-set(ICON_FILE arts/TicTacToe.png)
-set(ARTS_FILES arts/icon.png)
-set(DESKTOP_FILE desktop/TicTacToe.desktop)
-set(RC_FILE desktop/win32_res.rc)
+set(ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/arts/TicTacToe.png)
+set(ARTS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/arts/icon.png)
+set(DESKTOP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/desktop/TicTacToe.desktop)
+set(RC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/desktop/win32_res.rc)
 
 # prilinkovanie .rc suboru - kvoli ikone
 if(WIN32)
@@ -74,7 +79,7 @@ add_custom_target(make_target_dir "${CMAKE_COMMAND}" -E make_directory "${FINAL_
 
 # vytvorenie konfiguracneho include suboru pre projekt
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/include/config.h.in"
-			   "${CMAKE_CURRENT_SOURCE_DIR}/include/config.h")
+			   "${CMAKE_CURRENT_BINARY_DIR}/include/config.h")
 
 # vytvori moc subory
 qt_wrap_cpp(${FINAL_EXE} MOC_SRC_FILES ${MOC_FILES})
@@ -96,4 +101,3 @@ else(NOT UNIX)
 	install(DIRECTORY ./translations/ DESTINATION ./translations FILES_MATCHING PATTERN "*.qm")
 	install(FILES ${ARTS_FILES} DESTINATION ./arts)
 endif(UNIX)
-

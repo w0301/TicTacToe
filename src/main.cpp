@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     // pokusime sa loadnut subor s prekladom
     if( !translator.load(trFileName, "./translations" ) ) {
         if( !translator.load(trFileName, "../share/TicTacToe/translations") &&
-			!translator.load(trFileName, "/usr/share/TicTacToe/translations") && 
+			!translator.load(trFileName, "/usr/share/TicTacToe/translations") &&
 			!translator.load(trFileName, "/usr/local/share/TicTacToe/translations") ) {
             	translator.load(trFileName, "../translations" );
         }

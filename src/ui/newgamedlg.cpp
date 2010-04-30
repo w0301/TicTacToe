@@ -186,7 +186,7 @@ void NewGameDialog::fillPlayersPage(int i) {
         NewPlayerWidget *newWidget = new NewPlayerWidget;
         newWidget->show();
 
-        m_scrollWidget->layout()->addWidget(newWidget);        
+        m_scrollWidget->layout()->addWidget(newWidget);
         m_newPlayerWidgets[i] = newWidget;
     }
 }
