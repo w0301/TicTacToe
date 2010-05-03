@@ -73,12 +73,9 @@ class PlayerListFrame : public QFrame {
     Q_OBJECT
 
     public:
-        PlayerListFrame(QWidget*);
+        PlayerListFrame(Game*, QWidget* = NULL);
 
     public slots:
-        void setGame(Game*);
-        void unsetGame();
-
         void fillList();
         void setActualPlayer(Player*);
 

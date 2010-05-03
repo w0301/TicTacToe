@@ -170,7 +170,7 @@ class Game : public QObject {
 
         // signal je poslany ked je hra zacata
         // ako parameter posiela prveho hraca, kt. je aj na tahu
-        void gameStarted(Player*);
+        void gameStarted(Player* = NULL);
 
         // signal je poslany, ked hra skonci, ukazatel
         // je poslany v pripade, ze je ukoncene v pripade vyhri hraca
@@ -190,7 +190,7 @@ class Game : public QObject {
         // a posiela novy time limit
         void timerUpdated(int);
 
-    private:        
+    private:
         // uchovava vsetkych hracov hry
         QVector<Player*> m_players;
 

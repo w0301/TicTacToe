@@ -27,17 +27,17 @@ endif(NOT CMAKE_BUILD_TYPE)
 include_directories("include/" "${CMAKE_CURRENT_BINARY_DIR}/include/")
 
 # nastavenie suborov na spracovanie
-set(SRC_FILES 
+set(SRC_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel/game.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/kernel/player.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/mainwindow.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/ui/newgamedlg.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/playboard.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/ui/playercreator.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/playersign.cpp
 )
 
-set(MOC_FILES 
-	${CMAKE_CURRENT_SOURCE_DIR}/include/main.h ${CMAKE_CURRENT_SOURCE_DIR}/include/kernel/game.h 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/kernel/player.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/mainwindow.h 
-	${CMAKE_CURRENT_SOURCE_DIR}/include/ui/newgamedlg.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/playboard.h 
+set(MOC_FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/include/main.h ${CMAKE_CURRENT_SOURCE_DIR}/include/kernel/game.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/kernel/player.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/mainwindow.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/ui/newgamedlg.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/playboard.h
 	${CMAKE_CURRENT_SOURCE_DIR}/include/ui/playercreator.h ${CMAKE_CURRENT_SOURCE_DIR}/include/ui/playersign.h
 )
 
@@ -101,3 +101,4 @@ else(NOT UNIX)
 	install(DIRECTORY ./translations/ DESTINATION ./translations FILES_MATCHING PATTERN "*.qm")
 	install(FILES ${ARTS_FILES} DESTINATION ./arts)
 endif(UNIX)
+

@@ -23,24 +23,13 @@
 
 // PlayBoard class
 PlayBoard::PlayBoard(Game *game, QWidget *parent) :
-        QWidget(parent), m_game(NULL), m_clickEnabled(false), m_sideSize(0), m_fromLeft(0), m_fromTop(0) {
-    // plocha sa zatial neda pouzit => nemusime ju ukazovat
-    hide();
-    if(game != NULL) {
-        setGame(game);
-    }
-}
+        QWidget(parent), m_game(game), m_clickEnabled(false), m_sideSize(0), m_fromLeft(0), m_fromTop(0) {
+	if(m_game != NULL) {
+		// ked hra zmeni backend plochu musime znova vykreslit
+    	connect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(repaint(int, int)));
 
-// nastavenie hry, ktora pracuje nad plochou
-void PlayBoard::setGame(Game *game) {
-    unsetGame();
-    m_game = game;
-    if(m_game != NULL) {
-        // ked hra zmeni backend plochu musime znova vykreslit
-        connect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(repaint(int, int)));
-
-        // ked nastane kliknutie musime poslat hre suradnice stvorceka, kde sa kliklo
-        connect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processActualPlayer(int, int)));
+		// ked nastane kliknutie musime poslat hre suradnice stvorceka, kde sa kliklo
+    	connect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processActualPlayer(int, int)));
 
         // zabezpecime spravu kliknuti
         connect(m_game, SIGNAL(playerProcessStarted()), this, SLOT(disableClick()));
@@ -53,36 +42,26 @@ void PlayBoard::setGame(Game *game) {
         connect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(startBoard()));
         connect(m_game, SIGNAL(gameEnded()), this, SLOT(stopBoard()));
 
-        if(m_game->isRunning()) {
-            startBoard();
-        }
+        if(isRunning()) {
+        	startBoard();
+		}
     }
 }
 
-void PlayBoard::unsetGame() {
-    if(m_game != NULL) {
-        disconnect(m_game, SIGNAL(squareBoardUpdated(int, int)), this, SLOT(repaint(int, int)));
-        disconnect(this, SIGNAL(squareClicked(int, int)), m_game, SLOT(processActualPlayer(int, int)));
-        disconnect(m_game, SIGNAL(playerProcessStarted()), this, SLOT(disableClick()));
-        disconnect(m_game, SIGNAL(playerProcessEnded()), this, SLOT(enableClick()));
-        disconnect(m_game, SIGNAL(playerWon(Player*)), this, SLOT(stopBoard()));
-        disconnect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(startBoard()));
-        disconnect(m_game, SIGNAL(gameStopped()), this, SLOT(stopBoard()));
-
-        stopBoard();
-        m_game = NULL;
-    }
+bool PlayBoard::isRunning() const {
+	if(m_game == NULL) {
+		return false;
+	}
+	return m_game->isRunning();
 }
 
 void PlayBoard::startBoard() {
     enableClick();
-    m_isRunning = true;
-    show();
     repaint(WHOLE, WHOLE);
 }
 
 void PlayBoard::stopBoard() {
-    m_isRunning = false;
+	enableClick(false);
 }
 
 // vrati suradnice laveho horneho rohu stvorceka, ktory obsahuje [x, y]

@@ -19,36 +19,36 @@
 #include <QApplication>
 
 int main(int argc, char *argv[]) {
-    QApplication app(argc, argv);
+	QApplication app(argc, argv);
 
-    // nastavenie translatoru pre program
-    QTranslator translator;
-    QString trFileName = QString("tictactoe_") + QLocale::system().name();
+	// nastavenie translatoru pre program
+	QTranslator translator;
+	QString trFileName = QString("tictactoe_") + QLocale::system().name();
 
-    // pokusime sa loadnut subor s prekladom
-    if( !translator.load(trFileName, "./translations" ) ) {
-        if( !translator.load(trFileName, "../share/TicTacToe/translations") &&
+	// pokusime sa loadnut subor s prekladom
+	if( !translator.load(trFileName, "./translations" ) ) {
+		if( !translator.load(trFileName, "../share/TicTacToe/translations") &&
 			!translator.load(trFileName, "/usr/share/TicTacToe/translations") &&
 			!translator.load(trFileName, "/usr/local/share/TicTacToe/translations") ) {
-            	translator.load(trFileName, "../translations" );
-        }
-    }
-    app.installTranslator(&translator);
+				translator.load(trFileName, "../translations" );
+		}
+	}
+	app.installTranslator(&translator);
 
-    // nahranie a nastavenie ikony
-    QPixmap icon;
-    if( !icon.load("./arts/icon.png" ) ) {
-        if( !icon.load("../share/TicTacToe/arts/icon.png") &&
+	// nahranie a nastavenie ikony
+	QPixmap icon;
+	if( !icon.load("./arts/icon.png" ) ) {
+		if( !icon.load("../share/TicTacToe/arts/icon.png") &&
 			!icon.load("/usr/share/TicTacToe/arts/icon.png") &&
 			!icon.load("/usr/local/share/TicTacToe/arts/icon.png" ) ) {
-            	icon.load("../arts/icon.png" );
-        }
-    }
-    icon = icon.scaled(64, 64);
-    app.setWindowIcon( QIcon(icon) );
+				icon.load("../arts/icon.png" );
+		}
+	}
+	icon = icon.scaled(64, 64);
+	app.setWindowIcon( QIcon(icon) );
 
-    MainWindow window;
-    window.show();
+	MainWindow window;
+	window.show();
 
-    return app.exec();
+	return app.exec();
 }

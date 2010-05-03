@@ -60,8 +60,8 @@ void PlayerSignFrame::paintEvent(QPaintEvent*) {
 }
 
 // PlayerListFrame class
-PlayerListFrame::PlayerListFrame(QWidget *parent) :
-        QFrame(parent), m_game(NULL), m_actuPlayerName(NULL), m_playerList(NULL) {
+PlayerListFrame::PlayerListFrame(Game *game, QWidget *parent) :
+        QFrame(parent), m_game(game), m_actuPlayerName(NULL), m_playerList(NULL) {
     // pridanie widgetu s menom
     m_actuPlayerName = new QLabel(this);
 
@@ -81,6 +81,18 @@ PlayerListFrame::PlayerListFrame(QWidget *parent) :
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->addLayout(hLayout);
     vLayout->addWidget(m_playerList);
+
+    if(m_game != NULL) {
+        // pri zacati hry sa naplni list
+        connect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(fillList()));
+
+        // ked sa zmeni hrac nastavime label
+        connect(m_game, SIGNAL(playerChanged(Player*)), this, SLOT(setActualPlayer(Player*)));
+
+        // ked sa hra skonci musime vicistit list a label
+        connect(m_game, SIGNAL(gameEnded()), m_playerList, SLOT(clear()));
+        connect(m_game, SIGNAL(gameEnded()), m_actuPlayerName, SLOT(clear()));
+    }
 }
 
 // naplni list menami hracov
@@ -102,35 +114,6 @@ void PlayerListFrame::setActualPlayer(Player *pl) {
     }
     if(m_actuPlayerSign != NULL) {
         m_actuPlayerSign->setPlayer(pl);
-    }
-}
-
-// nastavi hru s ktorov bude widget pracovat
-void PlayerListFrame::setGame(Game *game) {
-    unsetGame();
-    m_game = game;
-    if(m_game != NULL) {
-        // pri zacati hry sa naplni list
-        connect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(fillList()));
-
-        // ked sa zmeni hrac nastavime label
-        connect(m_game, SIGNAL(playerChanged(Player*)), this, SLOT(setActualPlayer(Player*)));
-
-        // ked sa hra skonci musime vicistit list a label
-        connect(m_game, SIGNAL(gameEnded()), m_playerList, SLOT(clear()));
-        connect(m_game, SIGNAL(gameEnded()), m_actuPlayerName, SLOT(clear()));
-    }
-}
-
-void PlayerListFrame::unsetGame() {
-    if(m_game != NULL) {
-        disconnect(m_game, SIGNAL(gameStarted(Player*)), this, SLOT(fillList()));
-        disconnect(m_game, SIGNAL(playerChanged(Player*)), this, SLOT(setActualPlayer(Player*)));
-        disconnect(m_game, SIGNAL(gameEnded()), m_playerList, SLOT(clear()));
-        disconnect(m_game, SIGNAL(gameEnded()), m_actuPlayerName, SLOT(clear()));
-
-        m_game = NULL;
-        m_playerList->clear();
     }
 }
 
@@ -202,8 +185,7 @@ void MainWindow::setGame(Game *game) {
         connect(m_game, SIGNAL(timerUpdated(int)), m_timeLimitFrame, SLOT(showTimeLimit(int)));
 
         // vytvorenie listu hracov
-        m_playerListFrame = new PlayerListFrame(leftDockWidgets);
-        m_playerListFrame->setGame(m_game);
+        m_playerListFrame = new PlayerListFrame(m_game, leftDockWidgets);
 
         /// vytvorenie check boxu na pauzu
         m_pauseCheckBox = new QCheckBox(tr("&Pause"), leftDockWidgets);
@@ -283,4 +265,3 @@ void MainWindow::startAboutWindow() {
 
     QMessageBox::about(this, tr("About TicTacToe"), message);
 }
-
