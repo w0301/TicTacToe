@@ -141,7 +141,7 @@ class Game : public QObject {
     public slots:
         void fillSquare(int, int, Player*);
         void testWinner(int, int, Player*);
-        void processActualPlayer(int, int);
+        void processActualPlayer(int = -1, int = -1);
 
         // spustanie hry a pod
         void startGame(const QVector<Player*>&);

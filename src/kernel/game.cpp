@@ -25,6 +25,9 @@ Game::Game(int size, int time, int toWin, const QVector<Player*>& players, QObje
         m_actuTimeLimit(time), m_timerID(-1), m_toWin(toWin) {
     setSquareBoardSize(m_squareCount);
     setPlayers(players);
+
+    // pri spusteni hry zavolama funkciu pre spracovanie pripadnych nenormalnych hracov
+    connect(this, SIGNAL(gameStarted(Player*)), this, SLOT(processActualPlayer()));
 }
 
 Game::~Game() {
@@ -265,20 +268,20 @@ void Game::testWinner(int x, int y, Player *pl) {
 // ako parametre berie suradnice kliknuteho stvorceka v poli
 void Game::processActualPlayer(int arrX, int arrY) {
     emit playerProcessStarted();
-
-    Player *actPl = actualPlayer();
-    if(actPl != NULL && !actPl->isComputer()) {
-        // rucne zavolame slot, ktory zabezpeci pohyb
-        // no len ked mozeme vlozit krizik
-        if(square(arrX, arrY) == NULL) {
-            actPl->processMove(arrX, arrY);
-            actPl = incActualPlayer();
-        }
-        else {
-            emit playerProcessEnded();
-            return;
-        }
+    // ked je volana funkcia bez parametrov tak zistujeme ci sa mozeme pohnut
+    if(arrX == -1 && arrY == -1 && actualPlayer()->isOrdinary()) {
+    	return;
     }
+
+	Player *actPl = actualPlayer();
+	if(actPl != NULL && !actPl->isComputer()) {
+		// rucne zavolame slot, ktory zabezpeci pohyb
+		// no len ked mozeme vlozit krizik
+		if(square(arrX, arrY) == NULL) {
+			actPl->processMove(arrX, arrY);
+			actPl = incActualPlayer();
+		}
+	}
 
     // postarame sa o to aby sa pripdae NPCka alebo sietovy hraci
     // dostali k tahu
